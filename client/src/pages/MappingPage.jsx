@@ -13,18 +13,11 @@ const MappingPage = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch('http://localhost:5000/api/geojson')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
+  useEffect(async() => {
+     await api.get('/api/geojson')
       .then(data => {
-        setGeojsonData(data);
+        setGeojsonData(data.data);
         
-        // Extract korong list from features
         const korongs = data.features.map(feature => ({
           name: feature.properties.name,
           color: feature.properties.color || '#FED7AA'

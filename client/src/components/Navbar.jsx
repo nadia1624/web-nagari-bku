@@ -73,8 +73,8 @@ const Navbar = ({ activeTab, setActiveTab }) => {
       
       <nav className={`fixed w-full z-50 transition-all duration-500 ${
         scrolled 
-          ? 'bg-gradient-to-r from-red-900/95 via-red-800/95 to-red-900/95 backdrop-blur-xl shadow-2xl border-b border-white/10' 
-          : 'bg-gradient-to-r from-red-900/90 via-red-800/90 to-red-900/90 backdrop-blur-lg'
+          ? 'bg-gradient-to-r from-red-800 via-red-700 to-red-900 backdrop-blur-xl shadow-2xl border-b border-white/10' 
+          : 'bg-gradient-to-r from-red-800 via-red-700 to-red-900 backdrop-blur-lg'
       }`}>
         {/* Animated background particles */}
         <div className="absolute inset-0 overflow-hidden">

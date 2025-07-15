@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage';
 
 import './App.css';
 import './index.css';
+import UmkmPage from './pages/UmkmPage';
 
 // Komponen pembungkus agar bisa akses useLocation di luar Router
 const AppLayout = () => {
@@ -27,6 +28,7 @@ const AppLayout = () => {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/berita" element={<NewsPage />} />
           <Route path="/pemetaan" element={<MappingPage />} />
+          <Route path="/umkm" element={<UmkmPage />} />
           <Route path="/korong/:korongName" element={<KorongInfoPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<HomePage />} />

@@ -201,8 +201,8 @@ const ProfilePage = () => {
                       <h3 className="text-2xl font-bold text-blue-800">Visi</h3>
                     </div>
                     <p className="text-gray-700 leading-relaxed text-lg italic">
-                      "Mewujudkan Nagari Batu Kalang Utara yang maju, sejahtera, dan berkelanjutan
-                      dengan tetap mempertahankan nilai-nilai budaya dan kearifan lokal."
+                      "Terwujudnya Nagari Batu Kalang Utara Sebagai Nagari yang Mandiri, Maju dan Berprestasi
+                      Untuk Kesejahteraan Masyarakat. "
                     </p>
                   </div>
                 </div>
@@ -216,13 +216,14 @@ const ProfilePage = () => {
                       </div>
                       <h3 className="text-2xl font-bold text-green-800">Misi</h3>
                     </div>
-                    <ul className="space-y-3">
+                    <ul className="space-y-3 text-s">
                       {[
-                        'Meningkatkan kualitas pelayanan kepada masyarakat',
-                        'Mengembangkan potensi ekonomi dan pariwisata',
-                        'Melestarikan budaya dan tradisi lokal',
-                        'Membangun infrastruktur yang memadai',
-                        'Meningkatkan kualitas sumber daya manusia'
+                        'Mewujudkan Penyelenggaraan Pemerintahan yang Baik, Bersih dan Transparan',
+                        'Mewujudkan Sistem Perekonomian Berbasis Ekonomi Kerakyatan serta Penguatan Lembaga Ekonomi Nagari',
+                        'Peningktan Pembangunan Infrastruktur Saranan dan Prasarana Fasilitas Umum Nagari',
+                        'Peningkatan Kualitas Sumber Daya Manusia serta Pemahaman dan Pengamalan Norma - Norma Agama dan Adat Istiadat',
+                        'Peningkatan Derajat dan Kualitas Kesehatan Masyarakat serta Pemetaan Lingkungan yang Bersih dan Sehat',
+                        'Peningkatan Peran serta Masyarakat Terutama Perantau Untuk Kemajuan Pembangunan Nagari'
                       ].map((mission, index) => (
                         <li key={index} className="flex items-start text-gray-700 group/item hover:text-green-700 transition-colors">
                           <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200">
@@ -267,10 +268,6 @@ const ProfilePage = () => {
                     </div>
                     <h4 className="font-bold text-gray-800 text-lg mb-1">Wali Nagari</h4>
                     <p className="text-red-600 font-semibold mb-2">Nama Wali Nagari</p>
-                    <div className="flex items-center justify-center space-x-1 mt-4">
-                      <Heart className={`w-4 h-4 transition-colors ${hoveredCard === 'wali-nagari' ? 'text-red-500' : 'text-gray-400'}`} />
-                      <span className="text-xs text-gray-500">4.9</span>
-                    </div>
                   </div>
 
                   {/* Sekretaris */}
@@ -287,10 +284,6 @@ const ProfilePage = () => {
                     </div>
                     <h4 className="font-bold text-gray-800 text-lg mb-1">Sekretaris</h4>
                     <p className="text-blue-600 font-semibold mb-2">Nama Sekretaris</p>
-                    <div className="flex items-center justify-center space-x-1 mt-4">
-                      <Heart className={`w-4 h-4 transition-colors ${hoveredCard === 'sekretaris' ? 'text-red-500' : 'text-gray-400'}`} />
-                      <span className="text-xs text-gray-500">4.8</span>
-                    </div>
                   </div>
 
                   {/* Kaur Keuangan */}
@@ -307,10 +300,6 @@ const ProfilePage = () => {
                     </div>
                     <h4 className="font-bold text-gray-800 text-lg mb-1">Kaur Keuangan</h4>
                     <p className="text-green-600 font-semibold mb-2">Nama Kaur Keuangan</p>
-                    <div className="flex items-center justify-center space-x-1 mt-4">
-                      <Heart className={`w-4 h-4 transition-colors ${hoveredCard === 'kaur-keuangan' ? 'text-red-500' : 'text-gray-400'}`} />
-                      <span className="text-xs text-gray-500">4.7</span>
-                    </div>
                   </div>
 
                 </div>

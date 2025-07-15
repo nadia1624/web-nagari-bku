@@ -1,161 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Clock, Eye, Heart, Share2, Filter, Search, TrendingUp, Newspaper, Tag, ArrowRight, Star, Sparkles } from 'lucide-react';
-
-// Enhanced NewsCard Component
-const NewsCard = ({ news, index }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [views] = useState(Math.floor(Math.random() * 500) + 50);
-  const [likes, setLikes] = useState(Math.floor(Math.random() * 50) + 5);
-  const cardRef = useRef(null);
-
-  // Individual card intersection observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-      },
-      { 
-        threshold: 0.1,
-        rootMargin: '20px 0px -20px 0px'
-      }
-    );
-
-    if (cardRef.current) {
-      observer.observe(cardRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    setLikes(prev => isLiked ? prev - 1 : prev + 1);
-  };
-
-  const getRandomGradient = () => {
-    const gradients = [
-      'from-blue-500 to-cyan-500',
-      'from-purple-500 to-pink-500',
-      'from-green-500 to-emerald-500',
-      'from-orange-500 to-red-500',
-      'from-indigo-500 to-purple-500',
-      'from-teal-500 to-blue-500'
-    ];
-    return gradients[index % gradients.length];
-  };
-
-  const getBadgeColor = () => {
-    const colors = [
-      'bg-blue-100 text-blue-800',
-      'bg-purple-100 text-purple-800',
-      'bg-green-100 text-green-800',
-      'bg-orange-100 text-orange-800',
-      'bg-indigo-100 text-indigo-800',
-      'bg-teal-100 text-teal-800'
-    ];
-    return colors[index % colors.length];
-  };
-
-  return (
-    <div 
-      ref={cardRef}
-      className={`group bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-700 transform hover:scale-105 border border-white/50 overflow-hidden relative ${
-        isVisible ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-20 opacity-0 blur-md'
-      }`}
-      style={{ 
-        transitionDelay: `${index * 150}ms`,
-        filter: isVisible ? 'none' : 'blur(8px)'
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Animated background overlay */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${getRandomGradient()} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
-      
-      {/* Header Image/Placeholder */}
-      <div className="relative h-48 overflow-hidden">
-        <div className={`w-full h-full bg-gradient-to-br ${getRandomGradient()} flex items-center justify-center relative`}>
-          <Newspaper className="w-16 h-16 text-white/80 group-hover:scale-110 transition-transform duration-300" />
-          
-          {/* Floating elements */}
-          <div className="absolute top-4 left-4">
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getBadgeColor()}`}>
-              Breaking News
-            </span>
-          </div>
-          
-          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-            <div className="flex space-x-2">
-              <button className="w-8 h-8 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
-                <Share2 className="w-4 h-4 text-white" />
-              </button>
-            </div>
-          </div>
-
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-        </div>
-      </div>
-
-      <div className="p-6 relative">
-        {/* Date and Stats */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center text-gray-500 text-sm">
-            <Calendar className="w-4 h-4 mr-2" />
-            {news.date}
-          </div>
-          <div className="flex items-center space-x-3 text-gray-500 text-sm">
-            <div className="flex items-center">
-              <Eye className="w-4 h-4 mr-1" />
-              {views}
-            </div>
-            <div className="flex items-center">
-              <TrendingUp className="w-4 h-4 mr-1 text-green-500" />
-              <span className="text-green-500">+12%</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Title */}
-        <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-gray-900 transition-colors leading-tight line-clamp-2">
-          {news.title}
-        </h3>
-
-        {/* Content Preview */}
-        <p className="text-gray-600 mb-4 leading-relaxed line-clamp-3 group-hover:text-gray-700 transition-colors">
-          {news.content}
-        </p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium flex items-center">
-            <Tag className="w-3 h-3 mr-1" />
-            Pembangunan
-          </span>
-          <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-xs font-medium">
-            Infrastruktur
-          </span>
-        </div>
-
-        {/* Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          <div className="flex items-center space-x-4">
-          </div>
-
-          <button className="group/btn flex items-center text-gray-700 font-semibold hover:text-gray-900 transition-colors">
-            <span className="text-sm">Baca Selengkapnya</span>
-            <ArrowRight className="w-4 h-4 ml-2 transform group-hover/btn:translate-x-1 transition-transform" />
-          </button>
-        </div>
-      </div>
-
-      {/* Hover effect shine */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
-    </div>
-  );
-};
+import { Calendar, Share2, Search, Newspaper, Tag, ArrowRight, Sparkles} from 'lucide-react';
+import NewsCard from '../components/NewsCard';
 
 const NewsPage = () => {
   const [visibleSections, setVisibleSections] = useState({});
@@ -163,6 +8,7 @@ const NewsPage = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [sortBy, setSortBy] = useState('newest');
   const sectionRefs = useRef({});
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const newsData = [
     {
@@ -257,7 +103,6 @@ const NewsPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-100/40 relative overflow-hidden">
-      {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-purple-900/5 to-red-900/5"></div>
         {[...Array(10)].map((_, i) => (
@@ -275,9 +120,7 @@ const NewsPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
-        
-        {/* Enhanced Header */}
-        <div 
+        {/* <div 
           ref={el => sectionRefs.current.header = el}
           className={`text-center mb-12 transform transition-all duration-1000 ${
             visibleSections.header ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-10 opacity-0 blur-sm'
@@ -296,7 +139,48 @@ const NewsPage = () => {
           </p>
           
           <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-red-800 mx-auto rounded-full shadow-lg"></div>
-        </div>
+        </div> */}
+                {/* Enhanced Header */}
+        <div 
+          ref={el => sectionRefs.current.header = el}
+          className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50 mb-8"
+        >
+          <div 
+            className="relative bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white p-8 overflow-hidden"
+          >
+            <div 
+              className="absolute inset-0 opacity-20 transition-all duration-300"
+              style={{
+                background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(255,255,255,0.3) 0%, transparent 50%)`
+              }}
+            />
+            
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-10 right-20 w-32 h-32 border-2 border-white rounded-full animate-pulse"></div>
+              <div className="absolute bottom-10 left-20 w-24 h-24 border-2 border-white transform rotate-45"></div>
+              <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/20 rounded-lg transform rotate-12"></div>
+            </div>
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-md rounded-full mb-4">
+                <Sparkles className="w-4 h-4 text-yellow-300 mr-2 animate-pulse" />
+                <span className="text-white/90 text-sm font-medium">Portal Berita Nagari</span>
+              </div>
+              
+              <div className={`flex items-center mb-2 transform transition-all duration-1000 ${
+                visibleSections.header ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+              }`}>
+                <Newspaper className="w-8 h-8 mr-3" />
+                <h1 className="text-4xl md:text-5xl font-bold">Berita Nagari</h1>
+              </div>
+              <p className={`text-red-100 text-lg transform transition-all duration-1000 delay-200 ${
+                visibleSections.header ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+              }`}>
+                 Informasi terbaru dan terpercaya dari Nagari Batu Kalang Utara
+              </p>
+            </div>
+          </div>
+        </div> 
 
         {/* Search and Filter Section */}
         <div 
