@@ -1,5 +1,7 @@
 const {Berita} = require('../models/index');
 const { where } = require('sequelize');
+const fs = require("fs");
+const path = require("path");
 
 const getAllBerita = async (req, res) => {
     try {
@@ -34,8 +36,12 @@ const getBeritaById = async (req, res) => {
 }
 
 const createBerita = async (req, res) => {
-    const { judul, isi_berita, gambar } = req.body;
+    const { judul, isi_berita } = req.body;
+    const gambar = req.file.filename;
     try {
+          if (!req.file) {
+    return res.status(400).json({ message: 'File gambar wajib diunggah.' });
+  }
         const newBerita = await Berita.create({
             judul,
             isi_berita,
@@ -73,10 +79,17 @@ const updateBerita = async (req, res) => {
             return res.status(404).json({ message: 'Berita not found' });
         }
 
-        const { judul, isi_berita, gambar } = req.body;
+        const { judul, isi_berita } = req.body;
+        if (req.file) {
+            const oldImagePath = path.join(__dirname, '../uploads', berita.gambar);
+            if (fs.existsSync(oldImagePath)) {
+                fs.unlinkSync(oldImagePath);
+      }
+      
+      berita.gambar = req.file.filename;
+    }
         berita.judul = judul || berita.judul;
         berita.isi_berita = isi_berita || berita.isi_berita;
-        berita.gambar = gambar || berita.gambar;
 
         await berita.save();
         return res.status(200).json(berita);

@@ -1,15 +1,20 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
+const path = require("path");
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const authRoutes = require("./routes/authRoute");
+const beritaRoutes = require("./routes/beritaRoute");
+const umkmRoutes = require("./routes/umkmRoute");
+const umkm = require('./models/umkm');
 
 app.use(cors());
 app.use(express.json());
 app.use("/auth", authRoutes);
+app.use("/berita", beritaRoutes)
+app.use("/umkm", umkmRoutes)
 
 app.get('/', (req, res) => {
   res.send('API is working!');

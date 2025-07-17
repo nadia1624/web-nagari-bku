@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, User, Lock, AlertCircle, CheckCircle } from "lucide-react";
+import api from "../lib/axios";
 
 const LoginPage = () => {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -21,17 +22,19 @@ const LoginPage = () => {
     setMessage("");
 
     try {
-      const res = await axios.post("http://localhost:5000/auth/login", form);
+      const res = await api.post("/auth/login", form);
+      console.log(res)
 
       // Simpan token jika dibutuhkan
       localStorage.setItem("token", res.data.token);
+      console.log(res)
 
       setMessage("Login berhasil!");
       setMessageType("success");
 
       // Redirect ke halaman lain jika login berhasil
       setTimeout(() => {
-        navigate("/profile"); // ganti dengan halaman tujuanmu
+        navigate("/admin/dashboard"); // ganti dengan halaman tujuanmu
       }, 1500);
     } catch (err) {
       setMessage(err.response?.data?.message || "Username atau password salah");

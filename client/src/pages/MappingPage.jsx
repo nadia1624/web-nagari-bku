@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Navigation, Info, Layers, ZoomIn, Loader2, Sparkles, Eye, ChevronDown } from 'lucide-react';
 import L from 'leaflet';
+import api from '../lib/axios'; 
 
 const MappingPage = () => {
   const [geojsonData, setGeojsonData] = useState(null);
@@ -13,19 +14,18 @@ const MappingPage = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const navigate = useNavigate();
 
-  useEffect(async() => {
-     await api.get('/api/geojson')
+  useEffect(() => {
+    api.get('/api/geojson')
       .then(data => {
         setGeojsonData(data.data);
         
-        const korongs = data.features.map(feature => ({
+        const korongs = data.data.features?.map(feature => ({
           name: feature.properties.name,
           color: feature.properties.color || '#FED7AA'
         }));
         setKorongList(korongs);
         
-        // Calculate map bounds
-        const geoJsonLayer = L.geoJSON(data);
+        const geoJsonLayer = L.geoJSON(data.data);
         const bounds = geoJsonLayer.getBounds();
         setMapBounds(bounds);
         setLoading(false);
@@ -36,7 +36,6 @@ const MappingPage = () => {
       });
   }, []);
 
-  // Mouse tracking for interactive effects
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePosition({
@@ -123,7 +122,7 @@ const MappingPage = () => {
       {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-purple-900/5 to-red-900/5"></div>
-        {[...Array(12)].map((_, i) => (
+        {[...Array(12)]?.map((_, i) => (
           <div
             key={i}
             className="absolute w-2 h-2 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full animate-float"
@@ -185,7 +184,7 @@ const MappingPage = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    {korongList.map((korong, index) => (
+                    {korongList?.map((korong, index) => (
                       <button
                         key={index}
                         onClick={() => handleKorongClick(korong.name)}

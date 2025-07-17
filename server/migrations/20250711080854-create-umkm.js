@@ -3,13 +3,10 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Umkms', {
-      id: {
+      id_umkm: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      id_umkm: {
         type: Sequelize.INTEGER
       },
       nama_pemilik: {
@@ -23,6 +20,12 @@ module.exports = {
       },
       deskripsi: {
         type: Sequelize.TEXT
+      },
+      no_hp: {
+        type: Sequelize.STRING
+      },
+      gambar: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

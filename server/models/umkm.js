@@ -27,6 +27,14 @@ module.exports = (sequelize, DataTypes) => {
       deskripsi: {
         type: DataTypes.TEXT,
         allowNull: true
+      },
+      no_hp : {
+        type: DataTypes.STRING,
+        allowNull : true
+      },
+      gambar : {
+        type: DataTypes.STRING,
+        allowNull: true
       }
     },
     {

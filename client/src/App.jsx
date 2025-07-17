@@ -9,15 +9,17 @@ import NewsPage from './pages/NewsPage';
 import MappingPage from './pages/MappingPage'; 
 import KorongInfoPage from './pages/KorongInfoPage'; 
 import LoginPage from './pages/LoginPage';
+import UmkmPage from './pages/UmkmPage';
+import AdminDashboard from './pages/AdminDashboardPage';  
 
 import './App.css';
 import './index.css';
-import UmkmPage from './pages/UmkmPage';
 
 // Komponen pembungkus agar bisa akses useLocation di luar Router
 const AppLayout = () => {
   const location = useLocation();
-  const hideLayout = location.pathname === "/login";
+const hideLayout = location.pathname === "/login" || location.pathname.startsWith("/admin");
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -31,6 +33,7 @@ const AppLayout = () => {
           <Route path="/umkm" element={<UmkmPage />} />
           <Route path="/korong/:korongName" element={<KorongInfoPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </main>
