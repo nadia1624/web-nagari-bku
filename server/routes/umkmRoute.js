@@ -5,9 +5,9 @@ const {authenticateToken} = require("../middleware/authToken");
 const upload = require("../middleware/upload");
 
 router.get('/', authenticateToken, umkmControllers.getAllUmkm);
-router.get('/:id_berita', authenticateToken, umkmControllers.getUmkmById);  
+router.get('/:id_umkm', authenticateToken, umkmControllers.getUmkmById);  
 router.post('/', authenticateToken, upload.single("gambar"), umkmControllers.createUmkm);
-router.delete('/:id_berita', authenticateToken, umkmControllers.deleteUmkm);
-router.put('/:id_berita', authenticateToken,upload.single("gambar"), umkmControllers.updateUmkm);   
+router.delete('/:id_umkm', authenticateToken, umkmControllers.deleteUmkm);
+router.put('/:id_umkm', authenticateToken,upload.single("gambar"), umkmControllers.updateUmkm);   
 
 module.exports = router;

@@ -7,7 +7,7 @@ const getAllUmkm = async(req, res) => {
     try {
         const umkm = await Umkm.findAll({
         order: [['createdAt', 'DESC']],
-        attributes : ['id_umkm', 'nama_pemilik', 'produk', 'alamat','deskripsi','no_hp', 'createdAt']
+        attributes : ['id_umkm', 'nama_pemilik', 'produk', 'alamat','deskripsi','gambar','no_hp', 'createdAt']
         });
         res.status(200).json(umkm);
     } catch (error) {
@@ -21,7 +21,7 @@ const getUmkmById = async (req, res) => {
     try {
         const umkm = await Umkm.findOne({
             where: { id_umkm },
-            attributes: ['id_umkm', 'nama_pemilik', 'produk', 'alamat','deskripsi','no_hp', 'createdAt'],
+            attributes: ['id_umkm', 'nama_pemilik', 'produk', 'alamat','deskripsi','gambar','no_hp', 'createdAt'],
         });
 
         if (!umkm) {

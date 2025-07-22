@@ -28,7 +28,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
     },
   ];
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       const offset = window.scrollY;
@@ -94,7 +93,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="flex justify-between items-center h-16">
-            {/* Enhanced Logo */}
             <div className="flex items-center space-x-3 group">
               <div className="relative">
                 <div className="w-10 h-10 bg-gradient-to-br from-white via-red-50 to-red-100 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
