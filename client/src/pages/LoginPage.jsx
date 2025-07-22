@@ -25,16 +25,14 @@ const LoginPage = () => {
       const res = await api.post("/auth/login", form);
       console.log(res)
 
-      // Simpan token jika dibutuhkan
       localStorage.setItem("token", res.data.token);
       console.log(res)
 
       setMessage("Login berhasil!");
       setMessageType("success");
 
-      // Redirect ke halaman lain jika login berhasil
       setTimeout(() => {
-        navigate("/admin/dashboard"); // ganti dengan halaman tujuanmu
+        navigate("/admin/dashboard"); 
       }, 1500);
     } catch (err) {
       setMessage(err.response?.data?.message || "Username atau password salah");

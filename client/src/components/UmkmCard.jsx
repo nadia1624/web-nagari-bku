@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingBag, User, MapPin, FileText, Search, Filter, TrendingUp, Star, Heart, ArrowRight, Sparkles, Building2, Phone } from 'lucide-react';
 
-// Enhanced UMKM Card Component
 const UmkmCard = ({ umkm, index }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef(null); 
 
-  // Individual card intersection observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -64,51 +62,42 @@ const UmkmCard = ({ umkm, index }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Animated background overlay */}
       <div className={`absolute inset-0 bg-gradient-to-br ${getRandomGradient()} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
       
-      {/* Header Image/Placeholder */}
       <div className="relative h-48 overflow-hidden">
         <div className={`w-full h-full bg-gradient-to-br ${getRandomGradient()} flex items-center justify-center relative`}>
           <ShoppingBag className="w-16 h-16 text-white/80 group-hover:scale-110 transition-transform duration-300" />
           
-          {/* Business category badge */}
           <div className="absolute top-4 left-4">
             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getBadgeColor()}`}>
               {umkm.kategori || 'UMKM'}
             </span>
           </div>
           
-          {/* Action buttons */}
           <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
           </div>
 
-          {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
         </div>
       </div>
 
       <div className="p-6 relative">
-        {/* Business Name & Rating */}
         <div className="flex items-start justify-between mb-4">
           <h3 className="text-xl font-bold text-gray-800 group-hover:text-gray-900 transition-colors leading-tight flex-1">
             {umkm.nama_usaha}
           </h3>
         </div>
 
-        {/* Owner Info */}
         <div className="flex items-center mb-3">
           <User className="w-4 h-4 text-gray-500 mr-2" />
           <span className="text-gray-600 text-sm font-medium">{umkm.nama_pemilik}</span>
         </div>
 
-        {/* Location */}
         <div className="flex items-start mb-4">
           <MapPin className="w-4 h-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
           <span className="text-gray-600 text-sm leading-relaxed">{umkm.alamat}</span>
         </div>
 
-        {/* Description */}
         <div className="flex items-start mb-4">
           <FileText className="w-4 h-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
           <p className="text-gray-600 text-sm leading-relaxed line-clamp-3 group-hover:text-gray-700 transition-colors">
@@ -116,7 +105,6 @@ const UmkmCard = ({ umkm, index }) => {
           </p>
         </div>
 
-        {/* Product/Service Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
           {umkm.produk && umkm.produk.split(',').slice(0, 3).map((product, i) => (
             <span 
@@ -128,7 +116,6 @@ const UmkmCard = ({ umkm, index }) => {
           ))}
         </div>
 
-        {/* Actions */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div className="flex items-center space-x-4">
             {umkm.kontak && (
@@ -141,7 +128,6 @@ const UmkmCard = ({ umkm, index }) => {
         </div>
       </div>
 
-      {/* Hover effect shine */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none"></div>
     </div>
   );

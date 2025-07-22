@@ -38,7 +38,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -65,7 +64,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
 
   return (
     <>
-      {/* Glassmorphism overlay */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-red-900/20 via-purple-900/10 to-blue-900/20 backdrop-blur-3xl"></div>
       </div>
@@ -75,7 +73,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           ? 'bg-gradient-to-r from-red-800 via-red-700 to-red-900 backdrop-blur-xl shadow-2xl border-b border-white/10' 
           : 'bg-gradient-to-r from-red-800 via-red-700 to-red-900 backdrop-blur-lg'
       }`}>
-        {/* Animated background particles */}
         <div className="absolute inset-0 overflow-hidden">
           {[...Array(6)].map((_, i) => (
             <div
@@ -219,7 +216,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
               ))}
             </div>
 
-            {/* Enhanced Mobile menu button */}
             <div className="md:hidden">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -237,7 +233,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
             </div>
           </div>
 
-          {/* Enhanced Mobile Navigation */}
           {isMobileMenuOpen && (
             <div className="md:hidden pb-4 animate-in slide-in-from-top duration-300">
               <div className="space-y-2 bg-white/10 backdrop-blur-xl rounded-2xl p-4 mt-4 border border-white/20">
@@ -304,7 +299,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
         </div>
       </nav>
       
-      {/* Spacer to prevent content from hiding behind fixed navbar */}
       <div className="h-16"></div>
     </>
   );

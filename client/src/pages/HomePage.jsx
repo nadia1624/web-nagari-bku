@@ -11,7 +11,6 @@ const HomePage = () => {
   const statsRef = useRef(null);
   const navigate = useNavigate();
 
-  // Parallax and mouse tracking effects
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePosition({
@@ -31,7 +30,7 @@ const HomePage = () => {
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check initial state
+    handleScroll();
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -49,7 +48,6 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 overflow-hidden">
-      {/* Animated Background Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {[...Array(20)].map((_, i) => (
           <div
@@ -65,13 +63,11 @@ const HomePage = () => {
         ))}
       </div>
 
-      {/* Hero Section */}
       <div ref={heroRef} className="relative h-screen overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Carousel />
         </div>
 
-        {/* Interactive overlay with mouse tracking */}
         <div 
           className="absolute inset-0 z-10 transition-all duration-300"
           style={{
@@ -79,7 +75,6 @@ const HomePage = () => {
           }}
         />
 
-        {/* Floating particles */}
         <div className="absolute inset-0 z-15">
           {[...Array(8)].map((_, i) => (
             <div
@@ -96,7 +91,6 @@ const HomePage = () => {
         </div>
 
         <div className="relative z-20 flex flex-col items-center justify-center h-full text-center px-4">
-          {/* Enhanced Hero Content */}
           <div className="animate-in fade-in slide-in-from-bottom duration-1000 delay-300">
             <div className="mb-6 inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
               <Sparkles className="w-4 h-4 text-yellow-300 mr-2 animate-pulse" />
@@ -130,14 +124,12 @@ const HomePage = () => {
             </button>
           </div>
 
-          {/* Scroll indicator */}
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
             <ChevronDown className="w-6 h-6 text-white/70" />
           </div>
         </div>
       </div>
 
-      {/* Quick Stats Section */}
       <div className="relative -mt-20 z-30 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

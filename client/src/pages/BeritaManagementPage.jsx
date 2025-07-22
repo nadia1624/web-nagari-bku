@@ -29,7 +29,6 @@ const BeritaManagement = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   
@@ -43,7 +42,6 @@ const BeritaManagement = () => {
 
   const navigate = useNavigate();
 
-  // Check if any modal is open
   const isAnyModalOpen = showModal || showDetailModal || showDeleteConfirm;
 
   useEffect(() => {
@@ -76,13 +74,11 @@ const BeritaManagement = () => {
     berita.isi_berita.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredBerita.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredBerita.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Reset to first page when search changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -119,7 +115,6 @@ const BeritaManagement = () => {
 
     try {
       if (editMode && selectedBerita) {
-        // Update existing berita
         await api.put(`/berita/${selectedBerita.id_berita}`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -127,7 +122,6 @@ const BeritaManagement = () => {
         });
         setSuccess('Berita berhasil diperbarui!');
       } else {
-        // Create new berita
         await api.post('/berita', formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -138,7 +132,7 @@ const BeritaManagement = () => {
 
       setShowModal(false);
       resetForm();
-      fetchBerita(); // Refresh data
+      fetchBerita(); 
     } catch (error) {
       console.error('Error saving berita:', error);
       setError(error.response?.data?.message || 'Gagal menyimpan berita. Silakan coba lagi.');
@@ -154,7 +148,6 @@ const BeritaManagement = () => {
       isi_berita: berita.isi_berita
     });
     
-    // Set image preview if exists
     if (berita.gambar) {
       setImagePreview(`http://localhost:5000/uploads/${berita.gambar}`);
     }
@@ -170,7 +163,7 @@ const BeritaManagement = () => {
       setSuccess('Berita berhasil dihapus!');
       setShowDeleteConfirm(false);
       setDeleteId(null);
-      fetchBerita(); // Refresh data
+      fetchBerita();
     } catch (error) {
       console.error('Error deleting berita:', error);
       setError(error.response?.data?.message || 'Gagal menghapus berita');
@@ -219,7 +212,6 @@ const BeritaManagement = () => {
     });
   };
 
-  // Auto-hide alerts after 5 seconds
   useEffect(() => {
     if (success || error) {
       const timer = setTimeout(() => {
@@ -230,7 +222,6 @@ const BeritaManagement = () => {
     }
   }, [success, error]);
 
-  // Alert Component
   const AlertMessage = ({ message, type }) => {
     if (!message) return null;
     
@@ -248,8 +239,6 @@ const BeritaManagement = () => {
       </div>
     );
   };
-
-  // Pagination Component
   const Pagination = () => {
     if (totalPages <= 1) return null;
 
@@ -352,9 +341,7 @@ const BeritaManagement = () => {
 
   return (
     <div className="relative">
-      {/* Main Content with conditional blur */}
       <div className={`bg-white rounded-2xl shadow-xl p-8 ${isAnyModalOpen ? 'blur-sm scale-[0.98] opacity-50' : ''}`}>
-        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Manajemen Berita</h2>
           
@@ -383,11 +370,9 @@ const BeritaManagement = () => {
           </div>
         </div>
 
-        {/* Alert Messages */}
         <AlertMessage message={success} type="success" />
         <AlertMessage message={error} type="error" />
 
-        {/* Berita Table */}
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
@@ -469,11 +454,9 @@ const BeritaManagement = () => {
           )}
         </div>
 
-        {/* Pagination */}
         <Pagination />
       </div>
 
-      {/* Form Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 
@@ -573,7 +556,6 @@ const BeritaManagement = () => {
         </div>
       )}
 
-      {/* Detail Modal */}
       {showDetailModal && selectedBerita && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 
@@ -627,7 +609,6 @@ const BeritaManagement = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 

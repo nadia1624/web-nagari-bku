@@ -33,7 +33,6 @@ module.exports.login = async (req, res) => {
     });
     console.log("Token created successfully");
 
-    // Kirim token ke client
     res.json({ id: user.id, token });
     console.log("berhasil login");
   } catch (error) {

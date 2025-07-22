@@ -5,16 +5,12 @@ import { MapPin, Users, Building2, ArrowLeft, Sparkles } from 'lucide-react';
 const KorongInfoPage = () => {
   const { korongName } = useParams();
 
-  // Fungsi untuk mengubah format URL menjadi nama yang lebih mudah dibaca
   const formatKorongName = (name) => {
     return name.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
 
   const displayKorongName = formatKorongName(korongName);
 
-  // Di sini kamu bisa memuat data atau informasi lebih detail tentang korong
-  // dari API backend (misalnya, /api/korong/:korongName) atau dari data lokal.
-  // Untuk saat ini, kita akan menggunakan placeholder.
   const korongDetails = {
     "korong-a": {
       nama: "Korong A",
@@ -28,7 +24,6 @@ const KorongInfoPage = () => {
       penduduk: "± 1.200 jiwa",
       fasilitas: ["Mushola", "Balai Pertemuan", "Kebun Kopi"]
     },
-    // Tambahkan detail untuk Korong C dan D di sini
     "korong-c": {
       nama: "Korong C",
       deskripsi: "Korong C adalah pusat kegiatan masyarakat, dengan pasar tradisional dan berbagai usaha kecil menengah. Masyarakatnya sangat aktif dalam kegiatan kebudayaan.",
@@ -52,7 +47,6 @@ const KorongInfoPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-100/40 relative overflow-hidden">
-      {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-purple-900/5 to-red-900/5"></div>
         {[...Array(12)].map((_, i) => (
@@ -72,9 +66,7 @@ const KorongInfoPage = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
           
-          {/* Enhanced Header */}
           <div className="relative bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white p-8 overflow-hidden">
-            {/* Geometric patterns */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-10 right-20 w-32 h-32 border-2 border-white rounded-full animate-pulse"></div>
               <div className="absolute bottom-10 left-20 w-24 h-24 border-2 border-white transform rotate-45"></div>
@@ -97,7 +89,6 @@ const KorongInfoPage = () => {
           </div>
 
           <div className="p-8">
-            {/* Description Section */}
             <section className="mb-10">
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center mr-4">
@@ -112,7 +103,6 @@ const KorongInfoPage = () => {
               </div>
             </section>
 
-            {/* Demographics Section */}
             <section className="mb-10">
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-4">
@@ -128,7 +118,6 @@ const KorongInfoPage = () => {
               </div>
             </section>
 
-            {/* Facilities Section */}
             <section className="mb-10">
               <div className="flex items-center mb-6">
                 <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
@@ -154,7 +143,6 @@ const KorongInfoPage = () => {
               </div>
             </section>
 
-            {/* Back Button */}
             <div className="flex justify-center pt-6">
               <Link 
                 to="/pemetaan" 

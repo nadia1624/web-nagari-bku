@@ -32,7 +32,6 @@ const AdminUmkm = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
   
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   
@@ -48,7 +47,6 @@ const AdminUmkm = () => {
 
   const [umkmData, setUmkmData] = useState([]);
 
-  // Check if any modal is open
   const isAnyModalOpen = showAddModal || showDetailModal || showDeleteConfirm;
 
   useEffect(() => {
@@ -82,13 +80,11 @@ const AdminUmkm = () => {
     umkm.alamat.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredUmkm.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredUmkm.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Reset to first page when search changes
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -128,7 +124,6 @@ const AdminUmkm = () => {
 
     try {
       if (editMode && selectedUmkm) {
-        // Update existing UMKM
         await api.put(`/umkm/${selectedUmkm.id_umkm}`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -136,7 +131,6 @@ const AdminUmkm = () => {
         });
         setSuccess('Data UMKM berhasil diperbarui!');
       } else {
-        // Create new UMKM
         await api.post('/umkm', formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -147,7 +141,7 @@ const AdminUmkm = () => {
       
       setShowAddModal(false);
       resetForm();
-      fetchUmkmData(); // Refresh data
+      fetchUmkmData(); 
     } catch (error) {
       console.error('Error saving UMKM:', error);
       setError(error.response?.data?.message || 'Gagal menyimpan data UMKM. Silakan coba lagi.');
@@ -166,7 +160,6 @@ const AdminUmkm = () => {
       no_hp: umkm.no_hp
     });
     
-    // Set image preview if exists
     if (umkm.gambar) {
       setImagePreview(`http://localhost:5000/uploads/${umkm.gambar}`);
     }
@@ -234,7 +227,6 @@ const AdminUmkm = () => {
     });
   };
 
-  // Auto-hide alerts after 5 seconds
   useEffect(() => {
     if (success || error) {
       const timer = setTimeout(() => {
@@ -245,7 +237,6 @@ const AdminUmkm = () => {
     }
   }, [success, error]);
 
-  // Alert Component
   const AlertMessage = ({ message, type }) => {
     if (!message) return null;
     
@@ -264,7 +255,6 @@ const AdminUmkm = () => {
     );
   };
 
-  // Pagination Component
   const Pagination = () => {
     if (totalPages <= 1) return null;
 
@@ -367,9 +357,7 @@ const AdminUmkm = () => {
 
   return (
     <div className="relative">
-      {/* Main Content with conditional blur */}
       <div className={`bg-white rounded-2xl shadow-xl p-8 ${isAnyModalOpen ? 'blur-sm scale-[0.98] opacity-50' : ''}`}>
-        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Manajemen UMKM</h2>
           
@@ -398,11 +386,9 @@ const AdminUmkm = () => {
           </div>
         </div>
 
-        {/* Alert Messages */}
         <AlertMessage message={success} type="success" />
         <AlertMessage message={error} type="error" />
 
-        {/* UMKM Table */}
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
             <thead>
@@ -483,11 +469,9 @@ const AdminUmkm = () => {
           )}
         </div>
 
-        {/* Pagination */}
         <Pagination />
       </div>
 
-      {/* Form Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div 

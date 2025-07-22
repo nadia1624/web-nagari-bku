@@ -10,7 +10,6 @@ const UmkmPage = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const sectionRefs = useRef({});
 
-  // Mouse tracking for interactive effects
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePosition({
@@ -23,7 +22,6 @@ const UmkmPage = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Intersection Observer for animations
   useEffect(() => {
     const observers = new Map();
     
@@ -55,7 +53,6 @@ const UmkmPage = () => {
     };
   }, []);
 
-  // Sample UMKM data - in real app, this would come from API
   const umkmData = [
     {
       id: 1,
@@ -129,7 +126,6 @@ const UmkmPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-100/40 relative overflow-hidden">
-      {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-purple-900/5 to-red-900/5"></div>
         {[...Array(12)].map((_, i) => (
@@ -148,7 +144,6 @@ const UmkmPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
         
-        {/* Enhanced Header */}
         <div 
           ref={el => sectionRefs.current.header = el}
           className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50 mb-8"

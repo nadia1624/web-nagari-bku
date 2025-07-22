@@ -7,7 +7,6 @@ const ProfilePage = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const sectionRefs = useRef({});
 
-  // Intersection Observer for animations
   useEffect(() => {
     const observers = new Map();
     
@@ -32,7 +31,6 @@ const ProfilePage = () => {
     };
   }, []);
 
-  // Mouse tracking for interactive effects
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePosition({
@@ -47,7 +45,6 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-100/40 relative overflow-hidden">
-      {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-purple-900/5 to-red-900/5"></div>
         {[...Array(12)].map((_, i) => (
@@ -66,13 +63,10 @@ const ProfilePage = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
-          
-          {/* Enhanced Header */}
           <div 
             className="relative bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white p-8 overflow-hidden"
             ref={el => sectionRefs.current.header = el}
           >
-            {/* Interactive background overlay */}
             <div 
               className="absolute inset-0 opacity-20 transition-all duration-300"
               style={{
@@ -80,7 +74,6 @@ const ProfilePage = () => {
               }}
             />
             
-            {/* Geometric patterns */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-10 right-20 w-32 h-32 border-2 border-white rounded-full animate-pulse"></div>
               <div className="absolute bottom-10 left-20 w-24 h-24 border-2 border-white transform rotate-45"></div>
@@ -108,7 +101,6 @@ const ProfilePage = () => {
 
           <div className="p-8">
             
-            {/* Pengenalan Singkat Section */}
             <section 
               className="mb-12"
               ref={el => sectionRefs.current.introduction = el}
@@ -143,7 +135,6 @@ const ProfilePage = () => {
                     </p>
                   </div>
 
-                  {/* Mini Statistics */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100 text-center hover:scale-105 transition-transform duration-300">
                       <Calendar className="w-8 h-8 text-green-600 mx-auto mb-2" />
@@ -167,7 +158,6 @@ const ProfilePage = () => {
                     <p className="text-gray-600 font-medium text-center">Foto Nagari</p>
                     <p className="text-gray-500 text-sm text-center mt-1">Gambar Nagari Batu Kalang Utara</p>
                     
-                    {/* Floating camera button */}
                     <button className="absolute top-4 right-4 w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group/btn">
                       <Camera className="w-4 h-4 text-yellow-800 group-hover/btn:animate-pulse" />
                     </button>
@@ -176,7 +166,6 @@ const ProfilePage = () => {
               </div>
             </section>
 
-            {/* Visi dan Misi Section */}
             <section 
               className="mb-12"
               ref={el => sectionRefs.current.vision = el}
@@ -238,7 +227,6 @@ const ProfilePage = () => {
               </div>
             </section>
 
-            {/* Struktur Organisasi Section */}
             <section 
               ref={el => sectionRefs.current.organization = el}
             >
@@ -254,7 +242,6 @@ const ProfilePage = () => {
               }`}>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   
-                  {/* Wali Nagari */}
                   <div
                     className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-white/50 group text-center"
                     onMouseEnter={() => setHoveredCard('wali-nagari')}
@@ -270,7 +257,6 @@ const ProfilePage = () => {
                     <p className="text-red-600 font-semibold mb-2">Nama Wali Nagari</p>
                   </div>
 
-                  {/* Sekretaris */}
                   <div
                     className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-white/50 group text-center"
                     onMouseEnter={() => setHoveredCard('sekretaris')}
@@ -286,7 +272,6 @@ const ProfilePage = () => {
                     <p className="text-blue-600 font-semibold mb-2">Nama Sekretaris</p>
                   </div>
 
-                  {/* Kaur Keuangan */}
                   <div
                     className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-white/50 group text-center"
                     onMouseEnter={() => setHoveredCard('kaur-keuangan')}

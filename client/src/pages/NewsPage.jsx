@@ -61,16 +61,14 @@ const NewsPage = () => {
     }
   ];
 
-  // Intersection Observer for animations
   useEffect(() => {
     const observers = new Map();
     
     const observerOptions = {
       threshold: 0.1,
-      rootMargin: '50px 0px -50px 0px' // Trigger animation earlier and keep it longer
+      rootMargin: '50px 0px -50px 0px' 
     };
 
-    // Create observers for each section
     const sectionKeys = ['header', 'search', 'grid'];
     
     sectionKeys.forEach(key => {
@@ -120,27 +118,6 @@ const NewsPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
-        {/* <div 
-          ref={el => sectionRefs.current.header = el}
-          className={`text-center mb-12 transform transition-all duration-1000 ${
-            visibleSections.header ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-10 opacity-0 blur-sm'
-          }`}
-        >
-          <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full mb-6">
-            <Newspaper className="w-4 h-4 text-blue-600 mr-2" />
-            <span className="text-blue-800 font-semibold text-sm">Portal Berita Nagari</span>
-          </div>
-
-          <h1 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-800 via-blue-800 to-purple-800 mb-4">
-            Berita Terkini
-          </h1>
-          <p className="text-gray-600 text-lg mb-6 max-w-2xl mx-auto">
-            Informasi terbaru dan terpercaya dari Nagari Batu Kalang Utara
-          </p>
-          
-          <div className="w-24 h-1 bg-gradient-to-r from-red-600 to-red-800 mx-auto rounded-full shadow-lg"></div>
-        </div> */}
-                {/* Enhanced Header */}
         <div 
           ref={el => sectionRefs.current.header = el}
           className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50 mb-8"
@@ -182,7 +159,6 @@ const NewsPage = () => {
           </div>
         </div> 
 
-        {/* Search and Filter Section */}
         <div 
           ref={el => sectionRefs.current.search = el}
           className={`bg-white/80 backdrop-blur-xl rounded-2xl p-6 mb-8 shadow-lg border border-white/50 transform transition-all duration-1000 delay-200 ${
@@ -191,7 +167,6 @@ const NewsPage = () => {
         >
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             
-            {/* Search Bar */}
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
@@ -205,7 +180,6 @@ const NewsPage = () => {
           </div>
         </div>
 
-        {/* News Grid */}
         <div 
           ref={el => sectionRefs.current.grid = el}
           className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transform transition-all duration-1000 delay-400 ${
@@ -217,7 +191,6 @@ const NewsPage = () => {
           ))}
         </div>
 
-        {/* No Results Message */}
         {filteredNews.length === 0 && (
           <div className={`text-center py-12 transform transition-all duration-1000 ${
             visibleSections.grid ? 'translate-y-0 opacity-100 blur-0' : 'translate-y-10 opacity-0 blur-sm'

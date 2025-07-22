@@ -10,7 +10,6 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Define page mappings with titles and breadcrumbs
   const pageConfig = {
     '/admin/dashboard': {
       title: 'Dashboard'
@@ -23,7 +22,6 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
     }
   };
 
-  // Get current page config or default
   const currentPage = pageConfig[location.pathname] || {
     title: 'Admin Panel',
     subtitle: 'Sistem Informasi Nagari',
@@ -54,11 +52,9 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
               </div>
             </div>
           </div>
-          
-          {/* Right Section */}
+
           <div className="flex items-center space-x-4">
 
-            {/* Profile Dropdown */}
             <div className="relative">
               <button
                 className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"

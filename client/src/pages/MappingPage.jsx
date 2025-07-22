@@ -119,7 +119,6 @@ const MappingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-100/40 relative overflow-hidden">
-      {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-purple-900/5 to-red-900/5"></div>
         {[...Array(12)]?.map((_, i) => (
@@ -139,9 +138,7 @@ const MappingPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
           
-          {/* Enhanced Header - Similar to ProfilePage */}
           <div className="relative bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white p-8 overflow-hidden">
-            {/* Interactive background overlay */}
             <div 
               className="absolute inset-0 opacity-20 transition-all duration-300"
               style={{
@@ -149,7 +146,6 @@ const MappingPage = () => {
               }}
             />
             
-            {/* Geometric patterns */}
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-10 right-20 w-32 h-32 border-2 border-white rounded-full animate-pulse"></div>
               <div className="absolute bottom-10 left-20 w-24 h-24 border-2 border-white transform rotate-45"></div>
@@ -171,11 +167,8 @@ const MappingPage = () => {
               </p>
             </div>
           </div>
-
-          {/* Main Content */}
           <div className="p-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* Sidebar */}
               <div className="lg:col-span-1">
                 <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl shadow-lg p-6 border border-gray-200">
                   <div className="flex items-center mb-4">
