@@ -13,6 +13,7 @@ import MappingPage from './pages/MappingPage';
 import KorongInfoPage from './pages/KorongInfoPage'; 
 import LoginPage from './pages/LoginPage';
 import UmkmPage from './pages/UmkmPage';
+import NewsDetailPage from './pages/NewsDetailPage';
 
 // Admin Pages
 import AdminDashboard from './pages/AdminDashboardPage';
@@ -78,11 +79,9 @@ const AdminLayout = ({ children }) => {
   );
 };
 
-// Main App Layout Logic
 const AppLayout = () => {
   const location = useLocation();
   
-  // Determine layout type based on path
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isLoginPage = location.pathname === '/login';
   
@@ -90,7 +89,6 @@ const AppLayout = () => {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       
-      {/* Public Routes with Public Layout */}
       <Route path="/" element={
         <PublicLayout>
           <HomePage />
@@ -126,8 +124,13 @@ const AppLayout = () => {
           <KorongInfoPage />
         </PublicLayout>
       } />
+
+      <Route path="/berita/:id" element={
+        <PublicLayout>
+          <NewsDetailPage />
+          </PublicLayout>
+} />
       
-      {/* Admin Routes with Admin Layout */}
       <Route path="/admin/dashboard" element={
         <AdminLayout>
           <AdminDashboard />
@@ -146,7 +149,6 @@ const AppLayout = () => {
         </AdminLayout>
       } />
       
-      {/* Fallback Route */}
       <Route path="*" element={
         <PublicLayout>
           <HomePage />

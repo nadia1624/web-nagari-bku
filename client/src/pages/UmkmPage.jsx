@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import UmkmCard from '../components/UmkmCard';
 import { ShoppingBag, User, MapPin, FileText, Search, Filter, TrendingUp, Star, Heart, ArrowRight, Sparkles, Building2, Phone } from 'lucide-react';
-
+import api from '../lib/axios';
 
 const UmkmPage = () => {
   const [visibleSections, setVisibleSections] = useState({});
@@ -53,76 +53,55 @@ const UmkmPage = () => {
     };
   }, []);
 
-  const umkmData = [
-    {
-      id: 1,
-      nama_usaha: "Warung Rendang Ibu Sari",
-      nama_pemilik: "Ibu Sari Wahyuni",
-      alamat: "Jl. Raya Nagari No. 15, Korong A",
-      deskripsi: "Warung yang menyajikan rendang khas Minang dengan resep turun temurun. Menggunakan daging sapi pilihan dan santan kelapa segar dari kebun sendiri.",
-      produk: "Rendang, Gulai, Dendeng",
-      kategori: "Kuliner",
-      kontak: "081234567890"
-    },
-    {
-      id: 2,
-      nama_usaha: "Kerajinan Anyaman Bambu Pak Budi",
-      nama_pemilik: "Budi Santoso",
-      alamat: "Korong B, RT 02/RW 01",
-      deskripsi: "Usaha kerajinan anyaman bambu yang menghasilkan berbagai produk seperti tas, topi, dan hiasan rumah dengan kualitas ekspor.",
-      produk: "Tas Anyaman, Topi, Hiasan Dinding",
-      kategori: "Kerajinan",
-      kontak: "082345678901"
-    },
-    {
-      id: 3,
-      nama_usaha: "Toko Kelontong Berkah",
-      nama_pemilik: "Andi Rahman",
-      alamat: "Jl. Masjid Korong C No. 8",
-      deskripsi: "Toko kelontong yang melayani kebutuhan sehari-hari masyarakat dengan harga terjangkau dan pelayanan ramah.",
-      produk: "Sembako, Minuman, Makanan Ringan",
-      kategori: "Retail",
-      kontak: "083456789012"
-    },
-    {
-      id: 4,
-      nama_usaha: "Bengkel Motor Jaya",
-      nama_pemilik: "Yudi Pratama",
-      alamat: "Jl. Utama Korong D No. 25",
-      deskripsi: "Bengkel motor yang menyediakan jasa service, perbaikan, dan penjualan sparepart motor dengan teknisi berpengalaman.",
-      produk: "Service Motor, Sparepart, Oli",
-      kategori: "Otomotif",
-      kontak: "084567890123"
-    },
-    {
-      id: 5,
-      nama_usaha: "Kue Tradisional Nenek Mina",
-      nama_pemilik: "Minarti",
-      alamat: "Korong A, Dekat Balai Nagari",
-      deskripsi: "Produsen kue tradisional khas Minang seperti lamang, lemper, dan kue basah lainnya untuk berbagai acara.",
-      produk: "Lamang, Lemper, Kue Basah",
-      kategori: "Kuliner",
-      kontak: "085678901234"
-    },
-    {
-      id: 6,
-      nama_usaha: "Konveksi Busana Muslim Sari",
-      nama_pemilik: "Sari Dewi",
-      alamat: "Jl. Pendidikan Korong B No. 12",
-      deskripsi: "Konveksi yang memproduksi busana muslim berkualitas dengan desain modern dan harga terjangkau untuk semua kalangan.",
-      produk: "Baju Muslim, Hijab, Gamis",
-      kategori: "Fashion",
-      kontak: "086789012345"
-    }
-  ];
+const [umkmData, setUmkmData] = useState([]);
+const [loading, setLoading] = useState(true); 
 
-  const filteredUmkm = umkmData.filter(umkm => {
-    const matchesSearch = umkm.nama_usaha.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         umkm.nama_pemilik.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         umkm.produk.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = selectedFilter === 'all' || umkm.kategori.toLowerCase() === selectedFilter.toLowerCase();
-    return matchesSearch && matchesFilter;
-  });
+useEffect(() => {
+  api.get('/api/umkm')
+    .then(response => {
+      const data = response.data;
+
+      const formattedUMKM = data.map(item => ({
+        id: item.id_umkm,
+        nama_usaha: item.nama_usaha,
+        nama_pemilik: item.nama_pemilik,
+        produk: item.produk,
+        alamat: item.alamat,
+        deskripsi: item.deskripsi,
+        kategori: item.kategori || 'UMKM',
+        kontak: item.no_hp, 
+        gambar: item.gambar, 
+        createdAt: new Date(item.createdAt).toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        })
+      }));
+
+      setUmkmData(formattedUMKM);
+      setLoading(false); 
+    })
+    .catch(error => {
+      console.error("Error fetching UMKM data:", error);
+      setLoading(false); 
+    });
+}, []);
+
+
+
+const filteredUmkm = umkmData.filter(umkm => {
+  const matchesSearch =
+    (umkm.nama_usaha || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (umkm.nama_pemilik || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (umkm.produk || '').toLowerCase().includes(searchTerm.toLowerCase());
+
+  const matchesFilter =
+    selectedFilter === 'all' || 
+    (umkm.kategori || '').toLowerCase() === selectedFilter.toLowerCase();
+
+  return matchesSearch && matchesFilter;
+});
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-100/40 relative overflow-hidden">

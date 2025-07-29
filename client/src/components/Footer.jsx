@@ -85,16 +85,12 @@ const Footer = () => {
           </div>
         </div>
 
-
-        {/* Footer bawah */}
         <div className="border-t border-gray-700 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
           <div className="text-center md:text-left mb-3 md:mb-0">
             &copy; 2025 Nagari Batu Kalang Utara. Semua hak dilindungi.
           </div>
           <div className="flex items-center gap-3">
-            <a href="#" className="hover:text-blue-400">Kebijakan Privasi</a>
-            <span>|</span>
-            <a href="#" className="hover:text-blue-400">Syarat & Ketentuan</a>
+            <a className="hover:text-blue-400">By KKN UNAND 2025</a>
           </div>
         </div>
       </div>

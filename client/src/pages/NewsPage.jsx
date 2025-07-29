@@ -1,65 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Share2, Search, Newspaper, Tag, ArrowRight, Sparkles} from 'lucide-react';
 import NewsCard from '../components/NewsCard';
+import api from '../lib/axios'; 
 
 const NewsPage = () => {
   const [visibleSections, setVisibleSections] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('newest');
   const sectionRefs = useRef({});
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  const newsData = [
-    {
-      id: 1,
-      title: "Pembangunan Infrastruktur Jalan Nagari",
-      content: "Pemerintah nagari melaksanakan pembangunan infrastruktur jalan untuk meningkatkan akses transportasi warga. Proyek ini diharapkan dapat mendukung perekonomian masyarakat...",
-      date: "15 Desember 2024",
-      image: null,
-      category: "infrastruktur"
-    },
-    {
-      id: 2,
-      title: "Musyawarah Nagari Tahun 2024",
-      content: "Musyawarah nagari telah dilaksanakan dengan partisipasi aktif dari seluruh elemen masyarakat. Berbagai program pembangunan telah dibahas dan disepakati...",
-      date: "10 Desember 2024",
-      image: null,
-      category: "pemerintahan"
-    },
-    {
-      id: 3,
-      title: "Program Bantuan Sosial",
-      content: "Penyaluran bantuan sosial kepada masyarakat yang membutuhkan telah dilaksanakan dengan transparan dan akuntabel. Program ini mencakup bantuan sembako dan biaya pendidikan...",
-      date: "5 Desember 2024",
-      image: null,
-      category: "sosial"
-    },
-    {
-      id: 4,
-      title: "Pelatihan Keterampilan Masyarakat",
-      content: "Diadakan pelatihan keterampilan untuk meningkatkan kemampuan masyarakat dalam berbagai bidang seperti pertanian, kerajinan, dan teknologi informasi...",
-      date: "1 Desember 2024",
-      image: null,
-      category: "pendidikan"
-    },
-    {
-      id: 5,
-      title: "Festival Budaya Nagari",
-      content: "Festival budaya tahunan nagari telah diselenggarakan dengan meriah. Berbagai pertunjukan seni dan budaya lokal ditampilkan untuk melestarikan tradisi...",
-      date: "28 November 2024",
-      image: null,
-      category: "budaya"
-    },
-    {
-      id: 6,
-      title: "Gotong Royong Pembersihan Lingkungan",
-      content: "Kegiatan gotong royong pembersihan lingkungan dilakukan secara serentak di seluruh wilayah nagari. Partisipasi masyarakat sangat antusias dalam menjaga kebersihan...",
-      date: "25 November 2024",
-      image: null,
-      category: "lingkungan"
-    }
-  ];
+  const [newsData, setNewsData] = useState([]);
+  
+
+  useEffect(() => {
+  api.get('/api/berita')
+    .then(response => {
+      const beritaData = response.data;
+
+      const formattedBerita = beritaData.map(item => ({
+        id: item.id_berita,
+        title: item.judul,
+        content: item.isi_berita,
+        date: new Date(item.createdAt).toLocaleDateString('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }),
+        image: item.gambar || null,
+        category: item.kategori || 'umum'
+      }));
+
+      setNewsData(formattedBerita); 
+
+      setLoading(false); 
+    })
+    .catch(error => {
+      console.error("Error fetching berita:", error);
+      setLoading(false); 
+    });
+}, []);
+
 
   useEffect(() => {
     const observers = new Map();

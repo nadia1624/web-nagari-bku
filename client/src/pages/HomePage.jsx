@@ -5,10 +5,12 @@ import Carousel from '../components/Carousel';
 
 const HomePage = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [videoVisible, setVideoVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [hoveredCard, setHoveredCard] = useState(null);
   const heroRef = useRef(null);
   const statsRef = useRef(null);
+  const videoRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,6 +28,13 @@ const HomePage = () => {
           setIsVisible(true);
         }
       }
+
+      if (videoRef.current) {
+        const rect = videoRef.current.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          setVideoVisible(true);
+        }
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -38,13 +47,7 @@ const HomePage = () => {
     };
   }, []);
 
-
-  const quickStats = [
-    { label: 'Total Penduduk', value: '8,245', icon: Users, color: 'from-blue-500 to-cyan-500' },
-    { label: 'Jumlah Dusun', value: '12', icon: MapPin, color: 'from-green-500 to-emerald-500' },
-    { label: 'UMKM Aktif', value: '156', icon: ShoppingBag, color: 'from-purple-500 to-pink-500' },
-    { label: 'Program Aktif', value: '24', icon: Award, color: 'from-orange-500 to-red-500' }
-  ];
+  const videoId = "9t3xxOAMh4Q"; 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 overflow-hidden">
@@ -130,24 +133,38 @@ const HomePage = () => {
         </div>
       </div>
 
-      <div className="relative -mt-20 z-30 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickStats.map((stat, index) => (
-              <div
-                key={stat.label}
-                className={`bg-white/90 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-white/20 transform transition-all duration-500 hover:scale-105 hover:shadow-2xl ${
-                  isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                }`}
-                style={{ transitionDelay: `${index * 100}ms` }}
-              >
-                <div className={`w-12 h-12 bg-gradient-to-r ${stat.color} rounded-xl flex items-center justify-center mb-4 shadow-lg`}>
-                  <stat.icon className="w-6 h-6 text-white" />
-                </div>
-                <div className="text-2xl font-bold text-gray-800 mb-1">{stat.value}</div>
-                <div className="text-sm text-gray-600 font-medium">{stat.label}</div>
+      <div 
+        ref={videoRef}
+        className="relative py-20 px-4 bg-gradient-to-br from-slate-50 to-white"
+      >
+        <div className="p-6 max-w-6xl mx-auto">
+          <div className={`text-center mb-12 transform transition-all duration-700 ${
+            videoVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+          }`}>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
+              Video Profil Nagari
+            </h2>
+            <p className="text-lg text-gray-600">
+              Nagari Batu Kalang Utara
+            </p>
+            <div className="w-24 h-1 bg-gradient-to-r from-red-500 to-red-600 mx-auto mt-4 rounded-full"></div>
+          </div>
+
+          <div className={`relative transform transition-all duration-700 delay-300 ${
+            videoVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
+          }`}>
+            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 p-2">
+              <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&showinfo=0`}
+                  title="Video Profil Nagari Batu Kalang Utara"
+                  className="absolute top-0 left-0 w-full h-full rounded-2xl"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </div>
