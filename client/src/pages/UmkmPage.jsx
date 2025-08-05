@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import UmkmCard from '../components/UmkmCard';
-import { ShoppingBag, User, MapPin, FileText, Search, Filter, TrendingUp, Star, Heart, ArrowRight, Sparkles, Building2, Phone } from 'lucide-react';
+import { ShoppingBag, Search} from 'lucide-react';
 import api from '../lib/axios';
 
 const UmkmPage = () => {
@@ -145,7 +145,6 @@ const filteredUmkm = umkmData.filter(umkm => {
 
             <div className="relative z-10">
               <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-md rounded-full mb-4">
-                <Sparkles className="w-4 h-4 text-yellow-300 mr-2 animate-pulse" />
                 <span className="text-white/90 text-sm font-medium">Direktori UMKM Nagari</span>
               </div>
               

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, ArrowRight, ShoppingBag } from 'lucide-react';
+import imgUrl from '../lib/imageUrl';
 
 const NewsCard = ({ news, index, onNewsClick }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -72,7 +73,7 @@ const NewsCard = ({ news, index, onNewsClick }) => {
       <div className="relative h-48 overflow-hidden">
         {news.image ? (
           <img
-            src={`http://localhost:5000/uploads/${news.image}`}
+            src={`${imgUrl}/${news.image}`}
             alt={news.title}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             onError={(e) => {

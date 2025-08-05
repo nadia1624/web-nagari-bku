@@ -1,0 +1,571 @@
+import React, { useEffect, useState, useRef } from 'react';
+import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
+import { useNavigate } from 'react-router-dom';
+import { MapPin, Navigation, Info, Layers, ZoomIn, Loader2, Wheat, Leaf, TreePine, Sprout } from 'lucide-react';
+import L from 'leaflet';
+import api from '../lib/axios';
+
+const MapLabels = ({ geojsonData }) => {
+  const map = useMap();
+  const labelsRef = useRef([]);
+
+  const getPolygonCenter = (coordinates) => {
+    let lat = 0, lng = 0;
+    const points = coordinates[0];
+    
+    for (let i = 0; i < points.length - 1; i++) {
+      lng += points[i][0];
+      lat += points[i][1];
+    }
+    
+    return [lat / (points.length - 1), lng / (points.length - 1)];
+  };
+
+  const getIconForCropType = (cropType) => {
+    const icons = {
+      'padi': '🌾',
+      'jagung': '🌽',
+      'sayuran': '🥬',
+      'kelapa sawit': '🌴',
+      'karet': '🌳',
+      'cengkeh': '🌿',
+      'kopi': '☕',
+      'coklat': '🍫',
+      'default': '🌱'
+    };
+    return icons[cropType?.toLowerCase()] || icons['default'];
+  };
+
+  useEffect(() => {
+    labelsRef.current.forEach(marker => {
+      if (map.hasLayer(marker)) {
+        map.removeLayer(marker);
+      }
+    });
+    labelsRef.current = [];
+
+    if (!geojsonData) return;
+
+    geojsonData.features.forEach((feature) => {
+      const center = getPolygonCenter(feature.geometry.coordinates);
+      const labelText = feature.properties.label || feature.properties.name;
+      const cropType = feature.properties.cropType || feature.properties.jenisTanaman;
+      const area = feature.properties.area || feature.properties.luas;
+      const cropIcon = getIconForCropType(cropType);
+      
+      const nameLabel = L.marker(center, {
+        icon: L.divIcon({
+          className: 'agriculture-label-container',
+          html: `<div class="
+            bg-green-50/95 backdrop-blur-sm border-2 border-green-200
+            rounded-2xl px-6 py-2
+            text-sm font-semibold text-center
+            shadow-lg shadow-green-900/10
+            transition-all duration-300 ease-out
+            hover:scale-105 hover:shadow-xl hover:shadow-green-900/20
+            whitespace-nowrap cursor-default
+            min-w-max
+          " 
+          data-farm-id="${feature.properties.id || feature.properties.name}"
+          style="color: ${feature.properties.color || '#16a34a'};">
+            <div class="flex items-center justify-center gap-2">
+              <span class="text-lg">${cropIcon}</span>
+              <div class="text-left">
+                <div class="font-bold text-xs">${labelText}</div>
+                ${cropType ? `<div class="text-xs opacity-75">${cropType}</div>` : ''}
+                ${area ? `<div class="text-xs opacity-60">${area} Ha</div>` : ''}
+              </div>
+            </div>
+          </div>`,
+          iconSize: [140, 45],
+          iconAnchor: [70, 22]
+        }),
+        interactive: false
+      });
+
+      nameLabel.addTo(map);
+      labelsRef.current.push(nameLabel);
+    });
+  }, [geojsonData, map]);
+
+  useEffect(() => {
+    return () => {
+      labelsRef.current.forEach(marker => {
+        if (map.hasLayer(marker)) {
+          map.removeLayer(marker);
+        }
+      });
+    };
+  }, [map]);
+
+  return null;
+};
+
+const AgriculturalMappingPage = () => {
+  const [geojsonData, setGeojsonData] = useState(null);
+  const [mapBounds, setMapBounds] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedFarm, setSelectedFarm] = useState(null);
+  const [farmList, setFarmList] = useState([]);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [filterCropType, setFilterCropType] = useState('all');
+  
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadAgriculturalData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const response = await api.get('/api/agricultural-geojson');
+        const data = response.data;
+        
+        if (!data || !data.features || data.features.length === 0) {
+          throw new Error('Data GeoJSON tidak valid atau kosong');
+        }
+
+        setGeojsonData(data);
+        
+        // Extract farm information from GeoJSON properties
+        const farms = data.features?.map((feature, index) => ({
+          id: feature.properties.id || index,
+          name: feature.properties.name || feature.properties.nama || `Lahan ${index + 1}`,
+          label: feature.properties.label || feature.properties.name || feature.properties.nama || `Lahan ${index + 1}`,
+          cropType: feature.properties.cropType || feature.properties.jenisTanaman || feature.properties.tanaman || 'Tidak Diketahui',
+          color: feature.properties.color || feature.properties.warna || '#22c55e',
+          area: feature.properties.area || feature.properties.luas || '0',
+          owner: feature.properties.owner || feature.properties.pemilik || 'Tidak Diketahui',
+          productivity: feature.properties.productivity || feature.properties.produktivitas || 'Tidak Diketahui',
+          plantingDate: feature.properties.plantingDate || feature.properties.tanggalTanam || 'Tidak Diketahui',
+          harvestDate: feature.properties.harvestDate || feature.properties.tanggalPanen || 'Tidak Diketahui'
+        }));
+        
+        setFarmList(farms);
+        
+        // Calculate map bounds
+        const geoJsonLayer = L.geoJSON(data);
+        const bounds = geoJsonLayer.getBounds();
+        setMapBounds(bounds);
+        
+      } catch (error) {
+        console.error("Error loading agricultural data:", error);
+        setError(error.message || 'Gagal memuat data pertanian');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAgriculturalData();
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePosition({
+        x: (e.clientX / window.innerWidth) * 100,
+        y: (e.clientY / window.innerHeight) * 100
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  const onEachFeature = (feature, layer) => {
+    const farmName = feature.properties.name || feature.properties.nama || 'Lahan Pertanian';
+    const cropType = feature.properties.cropType || feature.properties.jenisTanaman || feature.properties.tanaman || 'Tidak Diketahui';
+    const area = feature.properties.area || feature.properties.luas || '0';
+    const owner = feature.properties.owner || feature.properties.pemilik || 'Tidak Diketahui';
+    const productivity = feature.properties.productivity || feature.properties.produktivitas || 'Tidak Diketahui';
+
+    if (farmName) {
+      layer.bindTooltip(
+        `<div class="bg-green-50/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border-2 border-green-200">
+          <h3 class="font-bold text-green-800 text-sm mb-2 flex items-center gap-2">
+            <span class="text-lg">🌾</span> ${farmName}
+          </h3>
+          <div class="space-y-1 text-xs">
+            <p><span class="font-medium text-green-700">Jenis Tanaman:</span> ${cropType}</p>
+            <p><span class="font-medium text-green-700">Luas:</span> ${area} Ha</p>
+            <p><span class="font-medium text-green-700">Pemilik:</span> ${owner}</p>
+            <p><span class="font-medium text-green-700">Produktivitas:</span> ${productivity}</p>
+          </div>
+          <p class="text-xs text-green-600 mt-2 italic">Klik untuk info detail</p>
+        </div>`,
+        { 
+          sticky: true,
+          className: 'agricultural-tooltip',
+          direction: 'top',
+          offset: [0, -10]
+        }
+      );
+    }
+
+    layer.on({
+      click: () => {
+        setSelectedFarm(farmName);
+        const urlFriendlyFarmName = farmName.toLowerCase().replace(/\s/g, '-');
+        setTimeout(() => {
+          navigate(`/pertanian/${urlFriendlyFarmName}`);
+        }, 300);
+      },
+      mouseover: (e) => {
+        e.target.setStyle({
+          weight: 4,
+          color: '#ffffff',
+          fillOpacity: 0.9,
+          fillColor: feature.properties.color || feature.properties.warna || '#22c55e'
+        });
+        setSelectedFarm(farmName);
+
+        const labelElement = document.querySelector(`[data-farm-id="${feature.properties.id || feature.properties.name}"]`);
+        if (labelElement) {
+          labelElement.classList.add('scale-110', '-translate-y-1', 'shadow-2xl');
+          labelElement.style.zIndex = '1000';
+        }
+      },
+      mouseout: (e) => {
+        e.target.setStyle(style(feature));
+        setSelectedFarm(null);
+
+        const labelElement = document.querySelector(`[data-farm-id="${feature.properties.id || feature.properties.name}"]`);
+        if (labelElement) {
+          labelElement.classList.remove('scale-110', '-translate-y-1', 'shadow-2xl');
+          labelElement.style.zIndex = 'auto';
+        }
+      }
+    });
+  };
+
+  const style = (feature) => {
+    return {
+      fillColor: feature.properties.color || feature.properties.warna || '#22c55e',
+      weight: 2,
+      opacity: 1,
+      color: 'white',
+      dashArray: '3',
+      fillOpacity: 0.7
+    };
+  };
+
+  const handleFarmClick = (farmName) => {
+    const urlFriendlyFarmName = farmName.toLowerCase().replace(/\s/g, '-');
+    navigate(`/pertanian/${urlFriendlyFarmName}`);
+  };
+
+  // Filter farms based on crop type
+  const filteredFarms = farmList.filter(farm => 
+    filterCropType === 'all' || farm.cropType === filterCropType
+  );
+
+  // Get unique crop types for filter dropdown
+  const cropTypes = [...new Set(farmList.map(farm => farm.cropType))];
+
+  // Calculate statistics
+  const statistics = {
+    totalFarms: farmList.length,
+    totalArea: farmList.reduce((sum, farm) => sum + parseFloat(farm.area || 0), 0).toFixed(1),
+    cropTypes: cropTypes.length,
+    averageArea: farmList.length > 0 ? (farmList.reduce((sum, farm) => sum + parseFloat(farm.area || 0), 0) / farmList.length).toFixed(1) : '0'
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50/30 to-lime-100/40 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-green-600 animate-spin mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-green-800 mb-2">Memuat Peta Pertanian</h2>
+          <p className="text-green-600">Mohon tunggu sebentar...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50/30 to-yellow-100/40 flex items-center justify-center">
+        <div className="text-center bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-red-200">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Info className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-red-800 mb-2">Error Memuat Data</h2>
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Coba Lagi
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-100/40 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-purple-900/5 to-red-900/5"></div>
+        {[...Array(12)]?.map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full animate-bounce"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${i * 0.4}s`,
+              animationDuration: `${4 + Math.random() * 6}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
+          
+          {/* Header */}
+          <div className="relative bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white p-8 overflow-hidden">
+            <div 
+              className="absolute inset-0 opacity-20 transition-all duration-300"
+              style={{
+                background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(255,255,255,0.3) 0%, transparent 50%)`
+              }}
+            />
+            
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-10 right-20 w-32 h-32 border-2 border-white rounded-full animate-pulse"></div>
+              <div className="absolute bottom-10 left-20 w-24 h-24 border-2 border-white transform rotate-45"></div>
+              <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/20 rounded-lg transform rotate-12"></div>
+            </div>
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-md rounded-full mb-4">
+                <Wheat className="w-4 h-4 text-yellow-300 mr-2 animate-pulse" />
+                <span className="text-white/90 text-sm font-medium">Sistem Informasi Pertanian</span>
+              </div>
+              
+              <div className="flex items-center mb-2">
+                <Sprout className="w-8 h-8 mr-3" />
+                <h1 className="text-4xl md:text-5xl font-bold">Pemetaan Pertanian</h1>
+              </div>
+              <p className="text-green-100 text-lg">
+                Monitoring dan analisis lahan pertanian dengan teknologi GIS interaktif
+              </p>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="p-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              
+              {/* Sidebar */}
+              <div className="lg:col-span-1">
+                <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl shadow-lg p-6 border border-gray-200">
+                  <div className="flex items-center mb-4">
+                    <Layers className="w-5 h-5 text-green-600 mr-2" />
+                    <h2 className="text-lg font-bold text-green-800">Daftar Lahan</h2>
+                  </div>
+
+                  {/* Filter */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-green-700 mb-2">
+                      Filter Jenis Tanaman:
+                    </label>
+                    <select 
+                      value={filterCropType}
+                      onChange={(e) => setFilterCropType(e.target.value)}
+                      className="w-full p-2 border border-green-300 rounded-lg bg-white/60 text-green-800 text-sm"
+                    >
+                      <option value="all">Semua Tanaman</option>
+                      {cropTypes.map(cropType => (
+                        <option key={cropType} value={cropType}>{cropType}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {filteredFarms?.map((farm, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleFarmClick(farm.name)}
+                        className={`w-full text-left p-3 rounded-lg transition-all duration-200 border ${
+                          selectedFarm === farm.name
+                            ? 'bg-green-100 border-green-400 text-green-800 shadow-md'
+                            : 'bg-white/60 hover:bg-green-50 border-green-200 text-green-700'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <div 
+                              className="w-4 h-4 rounded-full mr-3 border-2 border-white shadow-sm"
+                              style={{ backgroundColor: farm.color }}
+                            ></div>
+                            <div>
+                              <span className="font-medium text-sm">{farm.label}</span>
+                              <div className="text-xs text-green-600">{farm.cropType}</div>
+                              <div className="text-xs text-green-500">{farm.area} Ha</div>
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Statistics */}
+                  <div className="mt-6 p-4 bg-green-100/60 rounded-lg border border-green-300">
+                    <div className="flex items-center mb-2">
+                      <Info className="w-4 h-4 text-green-600 mr-2" />
+                      <span className="text-sm font-medium text-green-800">Statistik Lahan</span>
+                    </div>
+                    <div className="space-y-1 text-xs text-green-700">
+                      <div className="flex justify-between">
+                        <span>Total Lahan:</span>
+                        <span className="font-semibold">{statistics.totalFarms} Area</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Total Luas:</span>
+                        <span className="font-semibold">{statistics.totalArea} Ha</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Jenis Tanaman:</span>
+                        <span className="font-semibold">{statistics.cropTypes} Varietas</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Rata-rata Luas:</span>
+                        <span className="font-semibold">{statistics.averageArea} Ha</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                    <div className="flex items-center mb-2">
+                      <Leaf className="w-4 h-4 text-amber-600 mr-2" />
+                      <span className="text-sm font-medium text-amber-800">Panduan Penggunaan</span>
+                    </div>
+                    <ul className="text-xs text-amber-700 space-y-1">
+                      <li>• Hover untuk melihat detail lahan</li>
+                      <li>• Klik untuk informasi lengkap</li>
+                      <li>• Gunakan scroll untuk zoom</li>
+                      <li>• Filter berdasarkan jenis tanaman</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Map Section */}
+              <div className="lg:col-span-3">
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-green-200">
+                  <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl shadow-lg p-4 border border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <Navigation className="w-5 h-5 text-green-600 mr-2" />
+                        <h3 className="text-lg font-semibold text-green-800">Peta Interaktif Lahan Pertanian</h3>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <ZoomIn className="w-4 h-4 text-green-500" />
+                        <span className="text-sm text-green-600">Scroll untuk zoom</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="relative">
+                    {geojsonData && mapBounds ? (
+                      <MapContainer
+                        bounds={mapBounds}
+                        scrollWheelZoom={true}
+                        className="h-[600px] w-full"
+                        style={{ borderRadius: '0 0 12px 12px' }}
+                      >
+                        <TileLayer
+                          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <GeoJSON
+                          data={geojsonData}
+                          style={style}
+                          onEachFeature={onEachFeature}
+                        />
+                        <MapLabels geojsonData={geojsonData} />
+                      </MapContainer>
+                    ) : (
+                      <div className="flex items-center justify-center h-[600px] bg-green-50">
+                        <div className="text-center">
+                          <Loader2 className="w-8 h-8 text-green-600 animate-spin mx-auto mb-4" />
+                          <p className="text-green-600">Memuat data pertanian...</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedFarm && (
+                      <div className="absolute top-4 left-4 bg-green-50/95 backdrop-blur-md rounded-xl shadow-lg p-4 border-2 border-green-200 z-[1000]">
+                        <div className="flex items-center">
+                          <Sprout className="w-4 h-4 text-green-600 mr-2" />
+                          <span className="font-medium text-green-800">{selectedFarm}</span>
+                        </div>
+                        <p className="text-xs text-green-600 mt-1">Klik untuk detail lengkap</p>
+                      </div>
+                    )}
+
+                    {/* Legend */}
+                    <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md rounded-xl shadow-lg p-4 border border-green-200 z-[1000]">
+                      <h4 className="font-bold text-green-800 text-sm mb-3 flex items-center">
+                        <TreePine className="w-4 h-4 mr-2" />
+                        Legend Tanaman
+                      </h4>
+                      <div className="space-y-2">
+                        {cropTypes.slice(0, 4).map((cropType, index) => {
+                          const icons = {
+                            'padi': '🌾',
+                            'kelapa sawit': '🌴',
+                            'sayuran': '🥬',
+                            'kopi': '☕',
+                            'jagung': '🌽',
+                            'karet': '🌳',
+                            'cengkeh': '🌿',
+                            'coklat': '🍫'
+                          };
+                          const icon = icons[cropType.toLowerCase()] || '🌱';
+                          
+                          return (
+                            <div key={index} className="flex items-center text-xs">
+                              <span className="text-lg mr-2">{icon}</span>
+                              <span className="text-green-700">{cropType}</span>
+                            </div>
+                          );
+                        })}
+                        {cropTypes.length > 4 && (
+                          <div className="text-xs text-green-600 italic">
+                            +{cropTypes.length - 4} lainnya
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .agricultural-tooltip {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
+        }
+        
+        .leaflet-tooltip-top:before {
+          border-top-color: rgba(240, 253, 244, 0.95) !important;
+        }
+        
+        .agriculture-label-container {
+          pointer-events: none;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+export default AgriculturalMappingPage;

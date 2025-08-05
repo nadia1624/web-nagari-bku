@@ -15,8 +15,9 @@ import {
 } from 'lucide-react';
 
 import api from '../lib/axios';
+import imgUrl from '../lib/imageUrl';
 
-const BeritaManagement = () => {
+const BeritaManagementPage = () => {
   const [beritaList, setBeritaList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -149,7 +150,7 @@ const BeritaManagement = () => {
     });
     
     if (berita.gambar) {
-      setImagePreview(`http://localhost:5000/uploads/${berita.gambar}`);
+      setImagePreview(`${imgUrl}/${berita.gambar}`);
     }
     
     setEditMode(true);
@@ -408,7 +409,7 @@ const BeritaManagement = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {berita.gambar && (
                       <img 
-                        src={`http://localhost:5000/uploads/${berita.gambar}`}
+                        src={`${imgUrl}/${berita.gambar}`}
                         alt="Foto Berita" 
                         className="w-20 h-20 object-cover rounded-md" 
                       />
@@ -586,7 +587,7 @@ const BeritaManagement = () => {
               {selectedBerita.gambar && (
                 <div className="w-full border rounded-lg overflow-hidden">
                   <img
-                    src={`http://localhost:5000/uploads/${selectedBerita.gambar}`}
+                    src={`${imgUrl}/${selectedBerita.gambar}`}
                     alt={selectedBerita.judul}
                     className="w-full h-64 object-cover"
                   />
@@ -648,4 +649,4 @@ const BeritaManagement = () => {
   );
 };
 
-export default BeritaManagement;
+export default BeritaManagementPage;

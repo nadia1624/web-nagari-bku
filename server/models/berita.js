@@ -3,7 +3,6 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Berita extends Model {
     static associate(models) {
-      // Relasi bisa ditambah, misalnya: Berita.belongsTo(models.User)
     }
   }
   Berita.init(

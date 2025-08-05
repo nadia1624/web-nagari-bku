@@ -65,21 +65,12 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Jam Layanan */}
           <div>
             <h3 className="text-lg font-semibold mb-5 text-blue-400">Jam Pelayanan</h3>
             <ul className="space-y-3 text-sm text-gray-300">
               <li className="flex gap-3 items-center">
                 <Clock className="text-blue-400 w-5 h-5" />
                 <span>Senin - Jumat: 08:00 - 16:00 WIB</span>
-              </li>
-              <li className="flex gap-3 items-center">
-                <Clock className="text-yellow-400 w-5 h-5" />
-                <span>Sabtu: 08:00 - 12:00 WIB</span>
-              </li>
-              <li className="flex gap-3 items-center">
-                <Clock className="text-red-400 w-5 h-5" />
-                <span>Minggu: Tutup</span>
               </li>
             </ul>
           </div>

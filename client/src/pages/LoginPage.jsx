@@ -9,7 +9,7 @@ const LoginPage = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [messageType, setMessageType] = useState(""); // 'success' or 'error'
+  const [messageType, setMessageType] = useState(""); 
   const navigate = useNavigate();
 
   const handleChange = (e) => {

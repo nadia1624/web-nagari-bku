@@ -5,10 +5,15 @@
       "type": "Feature",
       "properties": {
         "id": 1,
-        "name": "Korong Batu Kalang Tuo",
-        "area": "0.000082",
-        "color": "#e74c3c",
-        "label": "Batu Kalang Tuo"
+        "name": "Lahan Padi Sawah A",
+        "label": "Sawah A",
+        "cropType": "Padi",
+        "area": "2.5",
+        "owner": "Kelompok Tani Sejahtera",
+        "plantingDate": "2024-01-15",
+        "harvestDate": "2024-05-15",
+        "color": "#22c55e",
+        "productivity": "6.2 ton/ha"
       },
       "geometry": {
         "type": "Polygon",
@@ -33,10 +38,15 @@
       "type": "Feature",
       "properties": {
         "id": 2,
-        "name": "Korong Pondok Kayu",
-        "area": "0.000112",
-        "color": "#3498db",
-        "label": "Pondok Kayu"
+        "name": "Kebun Kelapa Sawit B",
+        "label": "Sawit B",
+        "cropType": "Kelapa Sawit",
+        "area": "3.8",
+        "owner": "PT Agro Mandiri",
+        "plantingDate": "2020-03-10",
+        "harvestDate": "Berkesinambungan",
+        "color": "#eab308",
+        "productivity": "18 ton/ha"
       },
       "geometry": {
         "type": "Polygon",
@@ -79,10 +89,15 @@
       "type": "Feature",
       "properties": {
         "id": 3,
-        "name": "Korong Kampung Baru",
-        "area": "0.000052",
-        "color": "#2ecc71",
-        "label": "Kampung Baru"
+        "name": "Kebun Sayuran Organik C",
+        "label": "Sayuran C",
+        "cropType": "Sayuran",
+        "area": "1.2",
+        "owner": "Koperasi Tani Organik",
+        "plantingDate": "2024-02-01",
+        "harvestDate": "2024-04-01",
+        "color": "#10b981",
+        "productivity": "12 ton/ha"
       },
       "geometry": {
         "type": "Polygon",
@@ -116,10 +131,15 @@
       "type": "Feature",
       "properties": {
         "id": 4,
-        "name": "Korong Durian Siamih",
-        "area": "0.000054",
-        "color": "#9b59b6",
-        "label": "Durian Siamih"
+        "name": "Perkebunan Kopi Arabika D",
+        "label": "Kopi D",
+        "cropType": "Kopi",
+        "area": "4.1",
+        "owner": "Asosiasi Petani Kopi",
+        "plantingDate": "2019-06-20",
+        "harvestDate": "2024-08-30",
+        "color": "#a855f7",
+        "productivity": "1.8 ton/ha"
       },
       "geometry": {
         "type": "Polygon",
@@ -157,3 +177,6 @@
     }
   ]
 }
+
+
+   

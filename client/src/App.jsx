@@ -14,6 +14,7 @@ import KorongInfoPage from './pages/KorongInfoPage';
 import LoginPage from './pages/LoginPage';
 import UmkmPage from './pages/UmkmPage';
 import NewsDetailPage from './pages/NewsDetailPage';
+import AgriMappingPage from './pages/AgriMappingPage';
 
 // Admin Pages
 import AdminDashboard from './pages/AdminDashboardPage';
@@ -110,6 +111,12 @@ const AppLayout = () => {
       <Route path="/pemetaan" element={
         <PublicLayout>
           <MappingPage />
+        </PublicLayout>
+      } />
+
+      <Route path='/pemetaan/pertanian' element={
+        <PublicLayout>
+          <AgriMappingPage />
         </PublicLayout>
       } />
       

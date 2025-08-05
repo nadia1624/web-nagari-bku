@@ -1,9 +1,80 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import React, { useEffect, useState, useRef } from 'react';
+import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Navigation, Info, Layers, ZoomIn, Loader2, Sparkles, Eye, ChevronDown } from 'lucide-react';
+import { MapPin, Navigation, Info, Layers, ZoomIn, Loader2, Sparkles } from 'lucide-react';
 import L from 'leaflet';
 import api from '../lib/axios'; 
+
+const MapLabels = ({ geojsonData }) => {
+  const map = useMap();
+  const labelsRef = useRef([]);
+
+  const getPolygonCenter = (coordinates) => {
+    let lat = 0, lng = 0;
+    const points = coordinates[0];
+    
+    for (let i = 0; i < points.length - 1; i++) {
+      lng += points[i][0];
+      lat += points[i][1];
+    }
+    
+    return [lat / (points.length - 1), lng / (points.length - 1)];
+  };
+
+  useEffect(() => {
+    labelsRef.current.forEach(marker => {
+      if (map.hasLayer(marker)) {
+        map.removeLayer(marker);
+      }
+    });
+    labelsRef.current = [];
+
+    if (!geojsonData) return;
+
+    geojsonData.features.forEach((feature) => {
+      const center = getPolygonCenter(feature.geometry.coordinates);
+      const labelText = feature.properties.label || feature.properties.name;
+      
+      const nameLabel = L.marker(center, {
+        icon: L.divIcon({
+          className: 'map-label-container',
+          html: `<div class="
+            bg-white/95 backdrop-blur-sm
+            rounded-full px-1 py-1
+            text-sm font-semibold text-center
+            shadow-lg shadow-black/10
+            border border-white/20
+            transition-all duration-300 ease-out
+            hover:scale-105 hover:shadow-xl hover:shadow-black/20
+            whitespace-nowrap cursor-default
+          " 
+          data-korong-id="${feature.properties.id || feature.properties.name}"
+          style="color: ${feature.properties.color || '#1f2937'};">
+            ${labelText}
+          </div>`,
+          iconSize: [120, 32],
+          iconAnchor: [60, 16]
+        }),
+        interactive: false
+      });
+
+      nameLabel.addTo(map);
+      labelsRef.current.push(nameLabel);
+    });
+  }, [geojsonData, map]);
+
+  useEffect(() => {
+    return () => {
+      labelsRef.current.forEach(marker => {
+        if (map.hasLayer(marker)) {
+          map.removeLayer(marker);
+        }
+      });
+    };
+  }, [map]);
+
+  return null;
+};
 
 const MappingPage = () => {
   const [geojsonData, setGeojsonData] = useState(null);
@@ -12,6 +83,7 @@ const MappingPage = () => {
   const [selectedKorong, setSelectedKorong] = useState(null);
   const [korongList, setKorongList] = useState([]);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,14 +125,15 @@ const MappingPage = () => {
 
     if (korongName) {
       layer.bindTooltip(
-        `<div class="bg-white p-2 rounded shadow-lg border">
-          <h3 class="font-bold text-gray-800">${korongName}</h3>
-          <p class="text-sm text-gray-600">Klik untuk info detail</p>
+        `<div class="bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-lg border border-white/30">
+          <h3 class="font-bold text-gray-800 text-sm mb-1">${korongName}</h3>
+          <p class="text-xs text-gray-600">Klik untuk info detail</p>
         </div>`,
         { 
           sticky: true,
           className: 'custom-tooltip',
-          direction: 'top'
+          direction: 'top',
+          offset: [0, -10]
         }
       );
     }
@@ -75,16 +148,28 @@ const MappingPage = () => {
       },
       mouseover: (e) => {
         e.target.setStyle({
-          weight: 4,
-          color: '#651F26',
-          fillOpacity: 0.9,
-          fillColor: '#ef4444'
+          weight: 3,
+          color: '#ffffff',
+          fillOpacity: 0.85,
+          fillColor: feature.properties.color || '#3b82f6'
         });
         setSelectedKorong(korongName);
+
+        const labelElement = document.querySelector(`[data-korong-id="${feature.properties.id || feature.properties.name}"]`);
+        if (labelElement) {
+          labelElement.classList.add('scale-110', '-translate-y-1', 'shadow-2xl');
+          labelElement.style.zIndex = '1000';
+        }
       },
       mouseout: (e) => {
         e.target.setStyle(style(feature));
         setSelectedKorong(null);
+
+        const labelElement = document.querySelector(`[data-korong-id="${feature.properties.id || feature.properties.name}"]`);
+        if (labelElement) {
+          labelElement.classList.remove('scale-110', '-translate-y-1', 'shadow-2xl');
+          labelElement.style.zIndex = 'auto';
+        }
       }
     });
   };
@@ -119,12 +204,13 @@ const MappingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-100/40 relative overflow-hidden">
+      {/* Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-purple-900/5 to-red-900/5"></div>
         {[...Array(12)]?.map((_, i) => (
           <div
             key={i}
-            className="absolute w-2 h-2 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full animate-float"
+            className="absolute w-2 h-2 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full animate-bounce"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -138,6 +224,7 @@ const MappingPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
           
+          {/* Header */}
           <div className="relative bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white p-8 overflow-hidden">
             <div 
               className="absolute inset-0 opacity-20 transition-all duration-300"
@@ -163,12 +250,16 @@ const MappingPage = () => {
                 <h1 className="text-4xl md:text-5xl font-bold">Pemetaan Wilayah</h1>
               </div>
               <p className="text-red-100 text-lg">
-                Jelajahi setiap korong dalam wilayah Nagari Batu Kalang Utara dengan peta interaktif
+                Jelajahi setiap korong dalam wilayah Nagari Batu Kalang Utara dengan peta interaktif berlabel
               </p>
             </div>
           </div>
+
+          {/* Main Content */}
           <div className="p-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              
+              {/* Sidebar */}
               <div className="lg:col-span-1">
                 <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl shadow-lg p-6 border border-gray-200">
                   <div className="flex items-center mb-4">
@@ -207,6 +298,7 @@ const MappingPage = () => {
                       <li>• Arahkan kursor ke area peta</li>
                       <li>• Klik untuk melihat detail korong</li>
                       <li>• Gunakan scroll untuk zoom in/out</li>
+                      <li>• Label muncul di tengah polygon</li>
                     </ul>
                   </div>
                 </div>
@@ -219,7 +311,7 @@ const MappingPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <Navigation className="w-5 h-5 text-gray-600 mr-2" />
-                        <h3 className="text-lg font-semibold text-gray-800">Peta Interaktif</h3>
+                        <h3 className="text-lg font-semibold text-gray-800">Peta Interaktif dengan Label</h3>
                       </div>
                       <div className="flex items-center space-x-2">
                         <ZoomIn className="w-4 h-4 text-gray-500" />
@@ -245,6 +337,7 @@ const MappingPage = () => {
                           style={style}
                           onEachFeature={onEachFeature}
                         />
+                        <MapLabels geojsonData={geojsonData} />
                       </MapContainer>
                     ) : (
                       <div className="flex items-center justify-center h-[600px] bg-gray-100">
@@ -256,7 +349,7 @@ const MappingPage = () => {
                     )}
 
                     {selectedKorong && (
-                      <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-4 border border-gray-200 z-[1000]">
+                      <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md rounded-xl shadow-lg p-4 border border-white/30 z-[1000]">
                         <div className="flex items-center">
                           <MapPin className="w-4 h-4 text-red-600 mr-2" />
                           <span className="font-medium text-gray-800">{selectedKorong}</span>
@@ -268,20 +361,23 @@ const MappingPage = () => {
                 </div>
               </div>
             </div>
-
-        
           </div>
         </div>
       </div>
 
       <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          33% { transform: translateY(-15px) rotate(5deg); }
-          66% { transform: translateY(5px) rotate(-5deg); }
+        .custom-tooltip {
+          background: transparent !important;
+          border: none !important;
+          box-shadow: none !important;
         }
-        .animate-float {
-          animation: float linear infinite;
+        
+        .leaflet-tooltip-top:before {
+          border-top-color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        .map-label-container {
+          pointer-events: none;
         }
       `}</style>
     </div>

@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import imgUrl from '../lib/imageUrl';
 
 import api from '../lib/axios';     
 
@@ -161,7 +162,7 @@ const AdminUmkm = () => {
     });
     
     if (umkm.gambar) {
-      setImagePreview(`http://localhost:5000/uploads/${umkm.gambar}`);
+      setImagePreview(`${imgUrl}/${umkm.gambar}`);
     }
     
     setEditMode(true);
@@ -191,7 +192,7 @@ const AdminUmkm = () => {
       setSuccess('Data UMKM berhasil dihapus!');
       setShowDeleteConfirm(false);
       setDeleteId(null);
-      fetchUmkmData(); // Refresh data
+      fetchUmkmData();
     } catch (error) {
       console.error('Error deleting UMKM:', error);
       setError(error.response?.data?.message || 'Gagal menghapus data UMKM');
@@ -429,7 +430,7 @@ const AdminUmkm = () => {
                     <div className="text-sm text-gray-900">{umkm.no_hp}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                      <img src={`http://localhost:5000/uploads/${umkm.gambar}`}
+                      <img src={`${imgUrl}/${umkm.gambar}`}
                       alt="Foto UMKM" className="w-20 h-20 object-cover rounded-md" />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -633,7 +634,7 @@ const AdminUmkm = () => {
                 {selectedUmkm.gambar && (
                   <div className="w-32 h-32 border rounded-lg overflow-hidden">
                     <img
-                    src={`http://localhost:5000/uploads/${selectedUmkm.gambar}`}
+                    src={`${imgUrl}/${selectedUmkm.gambar}`}
                       alt={selectedUmkm.produk}
                       className="w-full h-full object-cover"
                     />

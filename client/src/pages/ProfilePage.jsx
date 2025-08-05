@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, Target, Users, Award, MapPin, Calendar, TrendingUp, Star, Heart, Camera, Download, Share2, ChevronRight, Sparkles, Mountain, Building2, Leaf } from 'lucide-react';
+import { Eye, Target, Users, Calendar, Star, Camera, ChevronRight, Sparkles, Mountain, Leaf } from 'lucide-react';
 
 const ProfilePage = () => {
   const [isVisible, setIsVisible] = useState({});
@@ -82,7 +82,6 @@ const ProfilePage = () => {
 
             <div className="relative z-10">
               <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-md rounded-full mb-4">
-                <Sparkles className="w-4 h-4 text-yellow-300 mr-2 animate-pulse" />
                 <span className="text-white/90 text-sm font-medium">Profile Resmi Nagari</span>
               </div>
               
@@ -138,7 +137,7 @@ const ProfilePage = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100 text-center hover:scale-105 transition-transform duration-300">
                       <Calendar className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                      <div className="text-2xl font-bold text-gray-800">1987</div>
+                      <div className="text-2xl font-bold text-gray-800">2017</div>
                       <div className="text-sm text-gray-600">Tahun Pembentukan</div>
                     </div>
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-100 text-center hover:scale-105 transition-transform duration-300">
@@ -150,17 +149,17 @@ const ProfilePage = () => {
                 </div>
                 
                 <div className="relative group">
-                  <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-8 h-full flex flex-col items-center justify-center border border-gray-300 overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div className="w-40 h-40 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 relative overflow-hidden">
-                      <Mountain className="w-20 h-20 text-white" />
+                   <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-8 h-full flex flex-col items-center justify-center border border-gray-300 overflow-hidden hover:shadow-xl transition-all duration-300">
+                    <div className="w-full h-full rounded-2xl overflow-hidden mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 relative">
+                      <img 
+                        src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+                        alt="Nagari Batu Kalang Utara"
+                        className="w-full h-full object-cover"
+                      />
                       <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                     </div>
                     <p className="text-gray-600 font-medium text-center">Foto Nagari</p>
                     <p className="text-gray-500 text-sm text-center mt-1">Gambar Nagari Batu Kalang Utara</p>
-                    
-                    <button className="absolute top-4 right-4 w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group/btn">
-                      <Camera className="w-4 h-4 text-yellow-800 group-hover/btn:animate-pulse" />
-                    </button>
                   </div>
                 </div>
               </div>

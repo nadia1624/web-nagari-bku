@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Share2, Bookmark, Clock, User, Eye } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/axios';
+import imgUrl from '../lib/imageUrl';
 
 const NewsDetailPage = () => {
   const { id } = useParams();
@@ -197,7 +198,7 @@ const NewsDetailPage = () => {
           {newsData.image && (
             <div className="w-full h-96 md:h-80 bg-gray-200 rounded-lg mb-6 overflow-hidden">
               <img 
-                src={`http://localhost:5000/uploads/${newsData.image}`}
+                src={`${imgUrl}/${newsData.image}`}
                 alt={newsData.title}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
               />
@@ -234,7 +235,7 @@ const NewsDetailPage = () => {
                   {item.image && (
                     <div className="w-full h-32 bg-gray-200 overflow-hidden">
                       <img 
-                        src={`http://localhost:5000/uploads/${item.image}`}
+                        src={`${imgUrl}/${item.image}`}
                         alt={item.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => { e.target.style.display = 'none'; }}

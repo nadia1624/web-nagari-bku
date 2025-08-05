@@ -12,26 +12,26 @@ const KorongInfoPage = () => {
   const displayKorongName = formatKorongName(korongName);
 
   const korongDetails = {
-    "korong-a": {
-      nama: "Korong A",
+    "korong-batu-kalang-tuo": {
+      nama: "Korong Batu Kalang Tuo",
       deskripsi: "Korong A adalah salah satu dari empat korong utama di Nagari Batu Kalang Utara. Dikenal dengan lahan pertaniannya yang subur dan kerukunan warganya.",
       penduduk: "± 1.500 jiwa",
       fasilitas: ["Masjid", "Sekolah Dasar", "Puskesmas Pembantu"]
     },
-    "korong-b": {
-      nama: "Korong B",
+    "korong-pondok-kayu": {
+      nama: "Korong Pondok Kayu",
       deskripsi: "Korong B memiliki keindahan alam yang menawan dengan sungai yang mengalir deras, cocok untuk pengembangan wisata alam. Mayoritas penduduknya bekerja sebagai petani dan pekebun.",
       penduduk: "± 1.200 jiwa",
       fasilitas: ["Mushola", "Balai Pertemuan", "Kebun Kopi"]
     },
-    "korong-c": {
-      nama: "Korong C",
+    "korong-durian-siamih": {
+      nama: "Korong Durian Siamih",
       deskripsi: "Korong C adalah pusat kegiatan masyarakat, dengan pasar tradisional dan berbagai usaha kecil menengah. Masyarakatnya sangat aktif dalam kegiatan kebudayaan.",
       penduduk: "± 2.000 jiwa",
       fasilitas: ["Pasar Nagari", "Kantor Korong", "Posyandu"]
     },
-    "korong-d": {
-      nama: "Korong D",
+    "korong-kampung-baru": {
+      nama: "Korong Kampung bru",
       deskripsi: "Korong D berbatasan langsung dengan hutan lindung, menjadikannya strategis untuk konservasi lingkungan. Warganya menjaga erat adat dan tradisi leluhur.",
       penduduk: "± 800 jiwa",
       fasilitas: ["Air Terjun", "Makam Keramat", "Kelompok Tani"]

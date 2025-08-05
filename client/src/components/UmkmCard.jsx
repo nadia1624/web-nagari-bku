@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingBag, User, MapPin, FileText, Search, Filter, TrendingUp, Star, Heart, ArrowRight, Sparkles, Building2, Phone } from 'lucide-react';
+import imgUrl from '../lib/imageUrl';
 
 const UmkmCard = ({ umkm, index }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -67,7 +68,7 @@ const UmkmCard = ({ umkm, index }) => {
       <div className="relative h-48 overflow-hidden">
         {umkm.gambar ? (
           <img
-            src={`http://localhost:5000/uploads/${umkm.gambar}`}
+            src={`${imgUrl}/${umkm.gambar}`}
             alt={umkm.nama_usaha}
             className="w-full h-full object-cover"
           />

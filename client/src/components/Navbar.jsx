@@ -174,8 +174,8 @@ const Navbar = ({ activeTab, setActiveTab }) => {
                               onClick={() => setIsDropdownOpen(false)}
                               className={`flex items-center space-x-3 px-4 py-3 mx-2 rounded-xl text-sm transition-all duration-200 hover:scale-105 ${
                                 location.pathname === subItem.path
-                                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg'
-                                  : 'text-gray-700 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-100 hover:text-green-700'
+                                  ? 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg'
+                                  : 'text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-700'
                               }`}
                             >
                               <div className={`p-1 rounded-lg bg-gradient-to-r ${subItem.color}`}>

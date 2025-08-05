@@ -4,10 +4,8 @@ import { MapPin, Users, Calendar, ShoppingBag, ArrowRight, Star, TrendingUp, Hea
 import Carousel from '../components/Carousel';
 
 const HomePage = () => {
-  const [isVisible, setIsVisible] = useState(false);
   const [videoVisible, setVideoVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [hoveredCard, setHoveredCard] = useState(null);
   const heroRef = useRef(null);
   const statsRef = useRef(null);
   const videoRef = useRef(null);
@@ -96,7 +94,6 @@ const HomePage = () => {
         <div className="relative z-20 flex flex-col items-center justify-center h-full text-center px-4">
           <div className="animate-in fade-in slide-in-from-bottom duration-1000 delay-300">
             <div className="mb-6 inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-              <Sparkles className="w-4 h-4 text-yellow-300 mr-2 animate-pulse" />
               <span className="text-white/90 text-sm font-medium">Website Resmi Nagari</span>
             </div>
           </div>
@@ -109,7 +106,7 @@ const HomePage = () => {
 
           <div className="animate-in fade-in slide-in-from-bottom duration-1000 delay-700">
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-8 leading-tight">
-              NAGARI BATU KALANG UTARA
+              DI NAGARI BATU KALANG UTARA
             </h2>
           </div>
 

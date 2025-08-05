@@ -31,6 +31,16 @@ app.get('/api/geojson', (req, res) => {
   });
 });
 
+app.get('/api/agricultural-geojson', (req, res) => {
+  const geojsonPath = path.join(__dirname, '../data','agricultural_batukalang_utara.geojson');
+  res.sendFile(geojsonPath, (err) => {
+    if (err) {
+      console.error("Error sending GeoJSON file:", err);
+      res.status(500).send('Error loading GeoJSON data.');
+    }
+  });
+});
+
 app.get('/api/korong/:korongName', (req, res) => {
   const { korongName } = req.params;
   const korongDetails = {
@@ -56,7 +66,6 @@ app.get('/api/berita', async (req, res) => {
     }
 });
 
-// Mendapatkan detail berita berdasarkan ID
 app.get('/api/berita/:id_berita', async (req, res) => {
     const { id_berita } = req.params;
     try {
