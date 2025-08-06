@@ -19,6 +19,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
+    { id: 'informaasi-nagari', label: 'Informasi Nagari', icon: Newspaper, path: '/admin/informasi-nagari'},
     { id: 'berita', label: 'Berita', icon: Newspaper, path: '/admin/berita' },
     { id: 'umkm', label: 'UMKM', icon: ShoppingBag, path: '/admin/umkm' }
   ];
@@ -30,7 +31,6 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
 
   return (
     <>
-      {/* Sidebar dengan positioning yang stabil */}
       <div className={`${
         isMobile 
           ? `fixed top-0 left-0 bottom-0 z-50 transform transition-transform duration-300 ${
@@ -41,9 +41,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
         isMobile ? 'w-64' : ''
       } overflow-hidden`}>
         
-        {/* Content container dengan height yang konsisten */}
         <div className="flex flex-col h-full">
-          {/* Header section */}
           <div className="flex-shrink-0 p-6 border-b border-white/10">
             <div className="flex items-center justify-between mb-2">
               <h1 className="text-xl font-bold text-white">Admin Panel</h1>

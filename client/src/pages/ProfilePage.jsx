@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, Target, Users, Calendar, Star, Camera, ChevronRight, Sparkles, Mountain, Leaf } from 'lucide-react';
+import { Eye, Target, Users, Calendar, ChevronRight, Leaf } from 'lucide-react';
 
 const ProfilePage = () => {
   const [isVisible, setIsVisible] = useState({});
-  const [hoveredCard, setHoveredCard] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const sectionRefs = useRef({});
 

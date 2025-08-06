@@ -8,7 +8,6 @@ import {
   Eye, 
   X, 
   Calendar, 
-  User, 
   Upload,
   ChevronLeft,
   ChevronRight
