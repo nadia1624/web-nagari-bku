@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, useMap } from 'react-leaflet';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Navigation, Info, Layers, ZoomIn, Loader2, Wheat, Leaf, TreePine, Sprout } from 'lucide-react';
+import { Navigation, Info, Layers, ZoomIn, Loader2, Leaf, Sprout } from 'lucide-react';
 import L from 'leaflet';
 import api from '../lib/axios';
 
@@ -24,6 +24,7 @@ const MapLabels = ({ geojsonData }) => {
   const getIconForCropType = (cropType) => {
     const icons = {
       'padi': '🌾',
+      'pepaya': '🥭',
       'jagung': '🌽',
       'sayuran': '🥬',
       'kelapa sawit': '🌴',
@@ -48,43 +49,9 @@ const MapLabels = ({ geojsonData }) => {
 
     geojsonData.features.forEach((feature) => {
       const center = getPolygonCenter(feature.geometry.coordinates);
-      const labelText = feature.properties.label || feature.properties.name;
-      const cropType = feature.properties.cropType || feature.properties.jenisTanaman;
-      const area = feature.properties.area || feature.properties.luas;
-      const cropIcon = getIconForCropType(cropType);
+      const farmName = feature.properties.name; 
+      const cropType = feature.properties.cropType;
       
-      const nameLabel = L.marker(center, {
-        icon: L.divIcon({
-          className: 'agriculture-label-container',
-          html: `<div class="
-            bg-green-50/95 backdrop-blur-sm border-2 border-green-200
-            rounded-2xl px-6 py-2
-            text-sm font-semibold text-center
-            shadow-lg shadow-green-900/10
-            transition-all duration-300 ease-out
-            hover:scale-105 hover:shadow-xl hover:shadow-green-900/20
-            whitespace-nowrap cursor-default
-            min-w-max
-          " 
-          data-farm-id="${feature.properties.id || feature.properties.name}"
-          style="color: ${feature.properties.color || '#16a34a'};">
-            <div class="flex items-center justify-center gap-2">
-              <span class="text-lg">${cropIcon}</span>
-              <div class="text-left">
-                <div class="font-bold text-xs">${labelText}</div>
-                ${cropType ? `<div class="text-xs opacity-75">${cropType}</div>` : ''}
-                ${area ? `<div class="text-xs opacity-60">${area} Ha</div>` : ''}
-              </div>
-            </div>
-          </div>`,
-          iconSize: [140, 45],
-          iconAnchor: [70, 22]
-        }),
-        interactive: false
-      });
-
-      nameLabel.addTo(map);
-      labelsRef.current.push(nameLabel);
     });
   }, [geojsonData, map]);
 
@@ -128,23 +95,18 @@ const AgriculturalMappingPage = () => {
 
         setGeojsonData(data);
         
-        // Extract farm information from GeoJSON properties
-        const farms = data.features?.map((feature, index) => ({
-          id: feature.properties.id || index,
-          name: feature.properties.name || feature.properties.nama || `Lahan ${index + 1}`,
-          label: feature.properties.label || feature.properties.name || feature.properties.nama || `Lahan ${index + 1}`,
-          cropType: feature.properties.cropType || feature.properties.jenisTanaman || feature.properties.tanaman || 'Tidak Diketahui',
-          color: feature.properties.color || feature.properties.warna || '#22c55e',
-          area: feature.properties.area || feature.properties.luas || '0',
-          owner: feature.properties.owner || feature.properties.pemilik || 'Tidak Diketahui',
-          productivity: feature.properties.productivity || feature.properties.produktivitas || 'Tidak Diketahui',
-          plantingDate: feature.properties.plantingDate || feature.properties.tanggalTanam || 'Tidak Diketahui',
-          harvestDate: feature.properties.harvestDate || feature.properties.tanggalPanen || 'Tidak Diketahui'
+        const farms = data.features?.map((feature) => ({
+          id: feature.properties.id,
+          name: feature.properties.name,
+          label: feature.properties.label,
+          cropType: feature.properties.cropType,
+          color: feature.properties.color,
+          area: feature.properties.area,
+          owner: feature.properties.owner
         }));
         
         setFarmList(farms);
         
-        // Calculate map bounds
         const geoJsonLayer = L.geoJSON(data);
         const bounds = geoJsonLayer.getBounds();
         setMapBounds(bounds);
@@ -173,23 +135,21 @@ const AgriculturalMappingPage = () => {
   }, []);
 
   const onEachFeature = (feature, layer) => {
-    const farmName = feature.properties.name || feature.properties.nama || 'Lahan Pertanian';
-    const cropType = feature.properties.cropType || feature.properties.jenisTanaman || feature.properties.tanaman || 'Tidak Diketahui';
-    const area = feature.properties.area || feature.properties.luas || '0';
-    const owner = feature.properties.owner || feature.properties.pemilik || 'Tidak Diketahui';
-    const productivity = feature.properties.productivity || feature.properties.produktivitas || 'Tidak Diketahui';
+    const farmName = feature.properties.name;
+    const cropType = feature.properties.cropType;
+    const area = feature.properties.area;
+    const owner = feature.properties.owner;
 
     if (farmName) {
       layer.bindTooltip(
         `<div class="bg-green-50/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border-2 border-green-200">
           <h3 class="font-bold text-green-800 text-sm mb-2 flex items-center gap-2">
-            <span class="text-lg">🌾</span> ${farmName}
+            <span class="text-lg">${cropType === 'Pepaya' ? '🥭' : cropType === 'Padi' ? '🌾' : cropType === 'Jagung' ? '🌽' : '🌱'}</span> ${farmName}
           </h3>
           <div class="space-y-1 text-xs">
             <p><span class="font-medium text-green-700">Jenis Tanaman:</span> ${cropType}</p>
             <p><span class="font-medium text-green-700">Luas:</span> ${area} Ha</p>
             <p><span class="font-medium text-green-700">Pemilik:</span> ${owner}</p>
-            <p><span class="font-medium text-green-700">Produktivitas:</span> ${productivity}</p>
           </div>
           <p class="text-xs text-green-600 mt-2 italic">Klik untuk info detail</p>
         </div>`,
@@ -201,46 +161,11 @@ const AgriculturalMappingPage = () => {
         }
       );
     }
-
-    layer.on({
-      click: () => {
-        setSelectedFarm(farmName);
-        const urlFriendlyFarmName = farmName.toLowerCase().replace(/\s/g, '-');
-        setTimeout(() => {
-          navigate(`/pertanian/${urlFriendlyFarmName}`);
-        }, 300);
-      },
-      mouseover: (e) => {
-        e.target.setStyle({
-          weight: 4,
-          color: '#ffffff',
-          fillOpacity: 0.9,
-          fillColor: feature.properties.color || feature.properties.warna || '#22c55e'
-        });
-        setSelectedFarm(farmName);
-
-        const labelElement = document.querySelector(`[data-farm-id="${feature.properties.id || feature.properties.name}"]`);
-        if (labelElement) {
-          labelElement.classList.add('scale-110', '-translate-y-1', 'shadow-2xl');
-          labelElement.style.zIndex = '1000';
-        }
-      },
-      mouseout: (e) => {
-        e.target.setStyle(style(feature));
-        setSelectedFarm(null);
-
-        const labelElement = document.querySelector(`[data-farm-id="${feature.properties.id || feature.properties.name}"]`);
-        if (labelElement) {
-          labelElement.classList.remove('scale-110', '-translate-y-1', 'shadow-2xl');
-          labelElement.style.zIndex = 'auto';
-        }
-      }
-    });
   };
 
   const style = (feature) => {
     return {
-      fillColor: feature.properties.color || feature.properties.warna || '#22c55e',
+      fillColor: feature.properties.color,
       weight: 2,
       opacity: 1,
       color: 'white',
@@ -250,24 +175,24 @@ const AgriculturalMappingPage = () => {
   };
 
   const handleFarmClick = (farmName) => {
-    const urlFriendlyFarmName = farmName.toLowerCase().replace(/\s/g, '-');
+    const urlFriendlyFarmName = farmName.toLowerCase().replace(/\s/g, '-').replace(/[()]/g, '');
     navigate(`/pertanian/${urlFriendlyFarmName}`);
   };
 
-  // Filter farms based on crop type
   const filteredFarms = farmList.filter(farm => 
     filterCropType === 'all' || farm.cropType === filterCropType
   );
 
-  // Get unique crop types for filter dropdown
   const cropTypes = [...new Set(farmList.map(farm => farm.cropType))];
 
-  // Calculate statistics
   const statistics = {
     totalFarms: farmList.length,
     totalArea: farmList.reduce((sum, farm) => sum + parseFloat(farm.area || 0), 0).toFixed(1),
     cropTypes: cropTypes.length,
-    averageArea: farmList.length > 0 ? (farmList.reduce((sum, farm) => sum + parseFloat(farm.area || 0), 0) / farmList.length).toFixed(1) : '0'
+    averageArea: farmList.length > 0 ? (farmList.reduce((sum, farm) => sum + parseFloat(farm.area || 0), 0) / farmList.length).toFixed(1) : '0',
+    padiCount: farmList.filter(farm => farm.cropType === 'Padi').length,
+    pepayaCount: farmList.filter(farm => farm.cropType === 'Pepaya').length,
+    jagungCount: farmList.filter(farm => farm.cropType === 'Jagung').length
   };
 
   if (loading) {
@@ -304,7 +229,6 @@ const AgriculturalMappingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-100/40 relative overflow-hidden">
-      {/* Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-purple-900/5 to-red-900/5"></div>
         {[...Array(12)]?.map((_, i) => (
@@ -323,8 +247,6 @@ const AgriculturalMappingPage = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
-          
-          {/* Header */}
           <div className="relative bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white p-8 overflow-hidden">
             <div 
               className="absolute inset-0 opacity-20 transition-all duration-300"
@@ -332,7 +254,6 @@ const AgriculturalMappingPage = () => {
                 background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(255,255,255,0.3) 0%, transparent 50%)`
               }}
             />
-            
             <div className="absolute inset-0 opacity-10">
               <div className="absolute top-10 right-20 w-32 h-32 border-2 border-white rounded-full animate-pulse"></div>
               <div className="absolute bottom-10 left-20 w-24 h-24 border-2 border-white transform rotate-45"></div>
@@ -341,33 +262,26 @@ const AgriculturalMappingPage = () => {
 
             <div className="relative z-10">
               <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-md rounded-full mb-4">
-                <Wheat className="w-4 h-4 text-yellow-300 mr-2 animate-pulse" />
-                <span className="text-white/90 text-sm font-medium">Sistem Informasi Pertanian</span>
+                <span className="text-white/90 text-sm font-medium">Peta Persebaran Komoditas Kelompok Rani Nago Intan</span>
               </div>
-              
               <div className="flex items-center mb-2">
                 <Sprout className="w-8 h-8 mr-3" />
                 <h1 className="text-4xl md:text-5xl font-bold">Pemetaan Pertanian</h1>
               </div>
               <p className="text-green-100 text-lg">
-                Monitoring dan analisis lahan pertanian dengan teknologi GIS interaktif
+                Monitoring dan analisis lahan pertanian di batu Kalang Utara, Padang Pariaman, Sumatera Barat dengan teknologi GIS interaktif
               </p>
             </div>
           </div>
 
-          {/* Main Content */}
           <div className="p-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              
-              {/* Sidebar */}
               <div className="lg:col-span-1">
                 <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl shadow-lg p-6 border border-gray-200">
                   <div className="flex items-center mb-4">
                     <Layers className="w-5 h-5 text-green-600 mr-2" />
                     <h2 className="text-lg font-bold text-green-800">Daftar Lahan</h2>
                   </div>
-
-                  {/* Filter */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-green-700 mb-2">
                       Filter Jenis Tanaman:
@@ -383,11 +297,10 @@ const AgriculturalMappingPage = () => {
                       ))}
                     </select>
                   </div>
-                  
                   <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {filteredFarms?.map((farm, index) => (
+                    {filteredFarms?.map((farm) => (
                       <button
-                        key={index}
+                        key={farm.id}
                         onClick={() => handleFarmClick(farm.name)}
                         className={`w-full text-left p-3 rounded-lg transition-all duration-200 border ${
                           selectedFarm === farm.name
@@ -402,7 +315,7 @@ const AgriculturalMappingPage = () => {
                               style={{ backgroundColor: farm.color }}
                             ></div>
                             <div>
-                              <span className="font-medium text-sm">{farm.label}</span>
+                              <span className="font-medium text-sm">{farm.name}</span>
                               <div className="text-xs text-green-600">{farm.cropType}</div>
                               <div className="text-xs text-green-500">{farm.area} Ha</div>
                             </div>
@@ -411,8 +324,6 @@ const AgriculturalMappingPage = () => {
                       </button>
                     ))}
                   </div>
-
-                  {/* Statistics */}
                   <div className="mt-6 p-4 bg-green-100/60 rounded-lg border border-green-300">
                     <div className="flex items-center mb-2">
                       <Info className="w-4 h-4 text-green-600 mr-2" />
@@ -435,9 +346,26 @@ const AgriculturalMappingPage = () => {
                         <span>Rata-rata Luas:</span>
                         <span className="font-semibold">{statistics.averageArea} Ha</span>
                       </div>
+                      {statistics.padiCount > 0 && (
+                        <div className="flex justify-between">
+                          <span>🌾 Padi:</span>
+                          <span className="font-semibold">{statistics.padiCount} Area</span>
+                        </div>
+                      )}
+                      {statistics.pepayaCount > 0 && (
+                        <div className="flex justify-between">
+                          <span>🥭 Pepaya:</span>
+                          <span className="font-semibold">{statistics.pepayaCount} Area</span>
+                        </div>
+                      )}
+                      {statistics.jagungCount > 0 && (
+                        <div className="flex justify-between">
+                          <span>🌽 Jagung:</span>
+                          <span className="font-semibold">{statistics.jagungCount} Area</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-
                   <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
                     <div className="flex items-center mb-2">
                       <Leaf className="w-4 h-4 text-amber-600 mr-2" />
@@ -452,15 +380,13 @@ const AgriculturalMappingPage = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Map Section */}
               <div className="lg:col-span-3">
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-green-200">
                   <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl shadow-lg p-4 border border-gray-200">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <Navigation className="w-5 h-5 text-green-600 mr-2" />
-                        <h3 className="text-lg font-semibold text-green-800">Peta Interaktif Lahan Pertanian</h3>
+                        <h3 className="text-lg font-semibold text-green-800">Peta Interaktif Lahan Pertanian Padang</h3>
                       </div>
                       <div className="flex items-center space-x-2">
                         <ZoomIn className="w-4 h-4 text-green-500" />
@@ -468,7 +394,6 @@ const AgriculturalMappingPage = () => {
                       </div>
                     </div>
                   </div>
-                  
                   <div className="relative">
                     {geojsonData && mapBounds ? (
                       <MapContainer
@@ -476,6 +401,7 @@ const AgriculturalMappingPage = () => {
                         scrollWheelZoom={true}
                         className="h-[600px] w-full"
                         style={{ borderRadius: '0 0 12px 12px' }}
+                        zoomControl={false}
                       >
                         <TileLayer
                           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -496,7 +422,38 @@ const AgriculturalMappingPage = () => {
                         </div>
                       </div>
                     )}
-
+                    <div className="absolute top-4 right-4 flex flex-col space-y-2 z-[1000]">
+                      <button 
+                        onClick={() => {
+                          const mapInstance = document.querySelector('.leaflet-container')?._leaflet_map;
+                          if (mapInstance) mapInstance.zoomIn();
+                        }}
+                        className="bg-white/95 backdrop-blur-md rounded-lg shadow-lg p-2 border border-green-200 hover:bg-green-50 transition-colors"
+                        title="Zoom In"
+                      >
+                        <ZoomIn className="w-4 h-4 text-green-600" />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          const mapInstance = document.querySelector('.leaflet-container')?._leaflet_map;
+                          if (mapInstance) mapInstance.zoomOut();
+                        }}
+                        className="bg-white/95 backdrop-blur-md rounded-lg shadow-lg p-2 border border-green-200 hover:bg-green-50 transition-colors"
+                        title="Zoom Out"
+                      >
+                        <ZoomIn className="w-4 h-4 text-green-600 rotate-180" />
+                      </button>
+                      <button 
+                        onClick={() => {
+                          const mapInstance = document.querySelector('.leaflet-container')?._leaflet_map;
+                          if (mapInstance && mapBounds) mapInstance.fitBounds(mapBounds);
+                        }}
+                        className="bg-white/95 backdrop-blur-md rounded-lg shadow-lg p-2 border border-green-200 hover:bg-green-50 transition-colors"
+                        title="Fit to Bounds"
+                      >
+                        <Navigation className="w-4 h-4 text-green-600" />
+                      </button>
+                    </div>
                     {selectedFarm && (
                       <div className="absolute top-4 left-4 bg-green-50/95 backdrop-blur-md rounded-xl shadow-lg p-4 border-2 border-green-200 z-[1000]">
                         <div className="flex items-center">
@@ -506,37 +463,26 @@ const AgriculturalMappingPage = () => {
                         <p className="text-xs text-green-600 mt-1">Klik untuk detail lengkap</p>
                       </div>
                     )}
-
-                    {/* Legend */}
-                    <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md rounded-xl shadow-lg p-4 border border-green-200 z-[1000]">
-                      <h4 className="font-bold text-green-800 text-sm mb-3 flex items-center">
-                        <TreePine className="w-4 h-4 mr-2" />
-                        Legend Tanaman
+                    <div className="absolute bottom-4 right-4 bg-white/95 backdrop-blur-md rounded-lg shadow-lg p-3 border border-green-200 z-[1000] max-w-[160px]">
+                      <h4 className="font-bold text-green-800 text-xs mb-2 flex items-center">
+                        Legend
                       </h4>
-                      <div className="space-y-2">
-                        {cropTypes.slice(0, 4).map((cropType, index) => {
-                          const icons = {
-                            'padi': '🌾',
-                            'kelapa sawit': '🌴',
-                            'sayuran': '🥬',
-                            'kopi': '☕',
-                            'jagung': '🌽',
-                            'karet': '🌳',
-                            'cengkeh': '🌿',
-                            'coklat': '🍫'
-                          };
-                          const icon = icons[cropType.toLowerCase()] || '🌱';
-                          
+                      <div className="space-y-1">
+                        {cropTypes.slice(0, 3).map((cropType, index) => {
+                          const color = farmList.find(farm => farm.cropType === cropType)?.color || '#000000';
                           return (
                             <div key={index} className="flex items-center text-xs">
-                              <span className="text-lg mr-2">{icon}</span>
-                              <span className="text-green-700">{cropType}</span>
+                              <div 
+                                className="w-4 h-4 rounded-sm mr-2 border border-gray-300" 
+                                style={{ backgroundColor: color }}
+                              ></div>
+                              <span className="text-green-700 text-[11px] truncate">{cropType}</span>
                             </div>
                           );
                         })}
-                        {cropTypes.length > 4 && (
-                          <div className="text-xs text-green-600 italic">
-                            +{cropTypes.length - 4} lainnya
+                        {cropTypes.length > 3 && (
+                          <div className="text-[11px] text-green-600 italic mt-1">
+                            +{cropTypes.length - 3} lainnya
                           </div>
                         )}
                       </div>
@@ -562,6 +508,45 @@ const AgriculturalMappingPage = () => {
         
         .agriculture-label-container {
           pointer-events: none;
+        }
+
+        .leaflet-container {
+          font-family: inherit;
+        }
+
+        .leaflet-popup-content-wrapper {
+          border-radius: 12px;
+        }
+
+        .leaflet-control-zoom {
+          display: none;
+        }
+
+        .agriculture-label-container div {
+          font-family: 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Inter', sans-serif;
+          letter-spacing: 0.01em;
+          transform: translate(-50%, -50%);
+          position: relative;
+          z-index: 100;
+        }
+
+        .agriculture-label-container .leaflet-div-icon {
+          border: none !important;
+          background: transparent !important;
+        }
+
+        .agriculture-label-container div:hover {
+          transform: translate(-50%, -50%) scale(1.05) translateY(-2px);
+          z-index: 1000;
+        }
+
+        .agriculture-label-container div * {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .agriculture-label-container span {
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
         }
       `}</style>
     </div>

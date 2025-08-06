@@ -134,16 +134,11 @@ const ProfilePage = () => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-100 text-center hover:scale-105 transition-transform duration-300">
                       <Calendar className="w-8 h-8 text-green-600 mx-auto mb-2" />
                       <div className="text-2xl font-bold text-gray-800">2017</div>
                       <div className="text-sm text-gray-600">Tahun Pembentukan</div>
-                    </div>
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-100 text-center hover:scale-105 transition-transform duration-300">
-                      <Star className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                      <div className="text-2xl font-bold text-gray-800">A</div>
-                      <div className="text-sm text-gray-600">Akreditasi Nagari</div>
                     </div>
                   </div>
                 </div>
