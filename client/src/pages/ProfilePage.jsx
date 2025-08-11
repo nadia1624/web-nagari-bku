@@ -146,7 +146,7 @@ const ProfilePage = () => {
                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-8 h-full flex flex-col items-center justify-center border border-gray-300 overflow-hidden hover:shadow-xl transition-all duration-300">
                     <div className="w-full h-full rounded-2xl overflow-hidden mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 relative">
                       <img 
-                        src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+                        src="/images/gambar2.jpg"
                         alt="Nagari Batu Kalang Utara"
                         className="w-full h-full object-cover"
                       />
@@ -229,59 +229,15 @@ const ProfilePage = () => {
                 <Users className="w-8 h-8 text-red-600 mr-3" />
                 Struktur Organisasi
               </h2>
+              <div className="w-full h-full rounded-2xl overflow-hidden mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 relative">
+                      <img 
+                        src="/images/gambar2.jpg"
+                        alt="Nagari Batu Kalang Utara"
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                    </div>
               
-              <div className={`bg-gradient-to-br from-gray-50 to-blue-50/30 p-6 rounded-2xl border border-gray-200 transform transition-all duration-700 delay-200 ${
-                isVisible.organization ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-              }`}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  
-                  <div
-                    className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-white/50 group text-center"
-                    onMouseEnter={() => setHoveredCard('wali-nagari')}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    <div className="relative mb-4">
-                      <div className="w-20 h-20 bg-gradient-to-r from-red-600 to-red-700 rounded-2xl mx-auto flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden">
-                        <span className="text-white text-lg font-bold relative z-10">WN</span>
-                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                      </div>
-                    </div>
-                    <h4 className="font-bold text-gray-800 text-lg mb-1">Wali Nagari</h4>
-                    <p className="text-red-600 font-semibold mb-2">Nama Wali Nagari</p>
-                  </div>
-
-                  <div
-                    className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-white/50 group text-center"
-                    onMouseEnter={() => setHoveredCard('sekretaris')}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    <div className="relative mb-4">
-                      <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl mx-auto flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden">
-                        <span className="text-white text-lg font-bold relative z-10">SW</span>
-                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                      </div>
-                    </div>
-                    <h4 className="font-bold text-gray-800 text-lg mb-1">Sekretaris</h4>
-                    <p className="text-blue-600 font-semibold mb-2">Nama Sekretaris</p>
-                  </div>
-
-                  <div
-                    className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-white/50 group text-center"
-                    onMouseEnter={() => setHoveredCard('kaur-keuangan')}
-                    onMouseLeave={() => setHoveredCard(null)}
-                  >
-                    <div className="relative mb-4">
-                      <div className="w-20 h-20 bg-gradient-to-r from-green-600 to-green-700 rounded-2xl mx-auto flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 relative overflow-hidden">
-                        <span className="text-white text-lg font-bold relative z-10">KK</span>
-                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-                      </div>
-                    </div>
-                    <h4 className="font-bold text-gray-800 text-lg mb-1">Kaur Keuangan</h4>
-                    <p className="text-green-600 font-semibold mb-2">Nama Kaur Keuangan</p>
-                  </div>
-
-                </div>
-              </div>
             </section>
 
           </div>

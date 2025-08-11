@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   Plus,
   Search,
   Edit,
   Trash2,
   Eye,
   X,
-  MapPin,
-  Phone,
-  User,
-  Calendar,
-  Upload,
   ChevronLeft,
   ChevronRight,
-  Users,
   Building,
   Info,
   Share2,
-  Home
+  Home,
+  Upload,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import api from '../lib/axios';
+import imgUrl from '../lib/imageUrl';
 
 const AdminInformasi = () => {
   const [activeTab, setActiveTab] = useState('korong');
@@ -37,113 +35,81 @@ const AdminInformasi = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // Form data states
+  // Perubahan: State untuk gambar
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+
+  const [korongData, setKorongData] = useState([]);
+  const [fasilitasData, setFasilitasData] = useState([]);
+  const [informasiData, setInformasiData] = useState(null);
+  const [sosialMediaData, setSosialMediaData] = useState(null);
+
   const [formData, setFormData] = useState({});
   const [fasilitasFormData, setFasilitasFormData] = useState({
     nama_fasilitas: ''
   });
 
-  // Sample data - replace with actual API calls
-  const [korongData, setKorongData] = useState([
-    {
-      id_korong: 1,
-      nama_korong: 'Korong Tinggi',
-      deskripsi_korong: 'Korong dengan wilayah perbukitan',
-      jumlah_wanita: 120,
-      jumlah_pria: 115,
-      createdAt: '2024-01-15T10:00:00Z',
-      fasilitas: [
-        { id_fasilitas: 1, nama_fasilitas: 'Masjid Al-Ikhlas', id_korong: 1 },
-        { id_fasilitas: 2, nama_fasilitas: 'Sekolah Dasar', id_korong: 1 },
-        { id_fasilitas: 3, nama_fasilitas: 'Posyandu', id_korong: 1 }
-      ]
-    },
-    {
-      id_korong: 2,
-      nama_korong: 'Korong Rendah',
-      deskripsi_korong: 'Korong dengan wilayah dataran',
-      jumlah_wanita: 95,
-      jumlah_pria: 88,
-      createdAt: '2024-01-20T10:00:00Z',
-      fasilitas: [
-        { id_fasilitas: 4, nama_fasilitas: 'Surau Baitul Makmur', id_korong: 2 },
-        { id_fasilitas: 5, nama_fasilitas: 'Puskesmas Pembantu', id_korong: 2 }
-      ]
-    }
-  ]);
+  const navigate = useNavigate();
+  const isAnyModalOpen = showAddModal || showDetailModal || showDeleteConfirm || showAddFasilitasModal;
 
-  const [fasilitasData, setFasilitasData] = useState([
-    {
-      id_fasilitas: 1,
-      id_korong: 1,
-      nama_fasilitas: 'Masjid Al-Ikhlas',
-      korong: { nama_korong: 'Korong Tinggi' }
-    },
-    {
-      id_fasilitas: 2,
-      id_korong: 1,
-      nama_fasilitas: 'Sekolah Dasar',
-      korong: { nama_korong: 'Korong Tinggi' }
-    },
-    {
-      id_fasilitas: 3,
-      id_korong: 1,
-      nama_fasilitas: 'Posyandu',
-      korong: { nama_korong: 'Korong Tinggi' }
-    },
-    {
-      id_fasilitas: 4,
-      id_korong: 2,
-      nama_fasilitas: 'Surau Baitul Makmur',
-      korong: { nama_korong: 'Korong Rendah' }
-    },
-    {
-      id_fasilitas: 5,
-      id_korong: 2,
-      nama_fasilitas: 'Puskesmas Pembantu',
-      korong: { nama_korong: 'Korong Rendah' }
-    }
-  ]);
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+    };
+    checkAuth();
+    fetchData(activeTab);
+  }, [navigate, activeTab]);
 
-  const [informasiData, setInformasiData] = useState([
-    {
-      id: 1,
-      deskripsi: 'Nagari yang berkembang dengan pesat',
-      visi: 'Menjadi nagari yang sejahtera dan mandiri',
-      misi: 'Meningkatkan kesejahteraan masyarakat',
-      struktur: 'Wali Nagari, Sekretaris, Bendahara',
-      kontak: '0751-123456',
-      email: 'nagari@example.com',
-      vidio: 'https://youtube.com/watch?v=abc123',
-      jam_pelayanan: '08:00 - 16:00'
+  const fetchData = async (tab) => {
+    setLoading(true);
+    setError('');
+    try {
+      let response;
+      switch (tab) {
+        case 'korong':
+          response = await api.get('/informasi-nagari/korong');
+          setKorongData(response.data);
+          break;
+        case 'fasilitas':
+          response = await api.get('/informasi-nagari/fasilitas-korong');
+          setFasilitasData(response.data);
+          break;
+        case 'informasi':
+          response = await api.get('/informasi-nagari/informasi-nagari');
+          setInformasiData(response.data);
+          break;
+        case 'sosmed':
+          response = await api.get('/informasi-nagari/sosial-media');
+          setSosialMediaData(response.data);
+          break;
+        default:
+          break;
+      }
+    } catch (err) {
+      console.error('Error fetching data:', err);
+      setError('Gagal memuat data.');
+    } finally {
+      setLoading(false);
     }
-  ]);
-
-  const [sosialMediaData, setSosialMediaData] = useState([
-    {
-      id: 1,
-      facebook: 'https://facebook.com/nagari',
-      instagram: 'https://instagram.com/nagari',
-      x: 'https://x.com/nagari',
-      youtube: 'https://youtube.com/nagari'
-    }
-  ]);
+  };
 
   const tabs = [
-    { id: 'korong', name: 'Korong', icon: Home, count: korongData.length },
-    { id: 'fasilitas', name: 'Fasilitas', icon: Building, count: fasilitasData.length },
-    { id: 'informasi', name: 'Informasi Nagari', icon: Info, count: informasiData.length },
-    { id: 'sosmed', name: 'Sosial Media', icon: Share2, count: sosialMediaData.length }
+    { id: 'korong', name: 'Korong', icon: Home },
+    { id: 'fasilitas', name: 'Fasilitas', icon: Building},
+    { id: 'informasi', name: 'Informasi Nagari', icon: Info},
+    { id: 'sosmed', name: 'Sosial Media', icon: Share2}
   ];
-
-  const isAnyModalOpen = showAddModal || showDetailModal || showDeleteConfirm || showAddFasilitasModal;
 
   const getActiveData = () => {
     switch (activeTab) {
       case 'korong': return korongData;
       case 'fasilitas': return fasilitasData;
-      case 'informasi': return informasiData;
-      case 'sosmed': return sosialMediaData;
+      case 'informasi': return informasiData ? [informasiData] : [];
+      case 'sosmed': return sosialMediaData ? [sosialMediaData] : [];
       default: return [];
     }
   };
@@ -156,27 +122,31 @@ const AdminInformasi = () => {
       switch (activeTab) {
         case 'korong':
           return item.nama_korong.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                 item.deskripsi_korong?.toLowerCase().includes(searchTerm.toLowerCase());
+                  item.deskripsi_korong?.toLowerCase().includes(searchTerm.toLowerCase());
         case 'fasilitas':
           return item.nama_fasilitas.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                 item.korong?.nama_korong.toLowerCase().includes(searchTerm.toLowerCase());
+                  item.korong?.nama_korong.toLowerCase().includes(searchTerm.toLowerCase());
         case 'informasi':
           return item.deskripsi?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                 item.visi?.toLowerCase().includes(searchTerm.toLowerCase());
+                  item.visi?.toLowerCase().includes(searchTerm.toLowerCase());
         case 'sosmed':
           return item.facebook?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                 item.instagram?.toLowerCase().includes(searchTerm.toLowerCase());
+                  item.instagram?.toLowerCase().includes(searchTerm.toLowerCase());
         default:
           return false;
       }
     });
   };
 
-  // Handler functions
   const resetForm = () => {
     setFormData({});
     setEditMode(false);
     setSelectedItem(null);
+    setError('');
+    setSuccess('');
+    // Perbaikan: reset state gambar
+    setSelectedFile(null);
+    setImagePreview('');
   };
 
   const closeModal = () => {
@@ -198,6 +168,12 @@ const AdminInformasi = () => {
     setFormData(item);
     setEditMode(true);
     setShowAddModal(true);
+    // Perbaikan: Set pratinjau gambar yang sudah ada
+    if (item.struktur) {
+        setImagePreview(`${imgUrl}/${item.struktur}`);
+    } else {
+        setImagePreview('');
+    }
   };
 
   const handleDetail = (item) => {
@@ -210,86 +186,171 @@ const AdminInformasi = () => {
     setShowDeleteConfirm(true);
   };
 
-  const handleDelete = () => {
-    // Simulate delete
-    setSuccess('Data berhasil dihapus!');
-    setShowDeleteConfirm(false);
-    setDeleteId(null);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Simulate save
-    if (editMode) {
-      setSuccess('Data berhasil diperbarui!');
-    } else {
-      setSuccess('Data berhasil ditambahkan!');
+  const handleDelete = async () => {
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      switch (activeTab) {
+        case 'korong':
+          await api.delete(`/informasi-nagari/korong/${deleteId}`);
+          break;
+        case 'fasilitas':
+          await api.delete(`/informasi-nagari/fasilitas-korong/${deleteId}`);
+          break;
+        default:
+          break;
+      }
+      setSuccess('Data berhasil dihapus!');
+      setShowDeleteConfirm(false);
+      setDeleteId(null);
+      fetchData(activeTab);
+    } catch (err) {
+      console.error('Error deleting data:', err);
+      setError('Gagal menghapus data.');
+    } finally {
+      setLoading(false);
     }
-    setShowAddModal(false);
-    resetForm();
   };
 
-  // Fasilitas specific handlers
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setSuccess('');
+
+    // Perbaikan: Buat FormData jika ada file, atau kirim JSON jika tidak
+    const dataToSend = new FormData();
+    let isFormData = false;
+
+    // Jika tab aktif adalah 'informasi' dan ada file baru yang dipilih
+    if (activeTab === 'informasi' && selectedFile) {
+      isFormData = true;
+      dataToSend.append('struktur', selectedFile);
+      // Tambahkan data form lain ke FormData
+      for (const key in formData) {
+        // Hanya tambahkan data non-file ke FormData
+        if (key !== 'struktur' && key !== 'struktur_organisasi') {
+          dataToSend.append(key, formData[key]);
+        }
+      }
+    } else {
+      // Jika tidak ada file, kirim data sebagai JSON biasa
+      for (const key in formData) {
+        dataToSend.append(key, formData[key]);
+      }
+    }
+
+    try {
+      let response;
+      if (editMode) {
+        let config = isFormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+        
+        switch (activeTab) {
+          case 'korong':
+            await api.put(`/informasi-nagari/korong/${selectedItem.id_korong}`, formData);
+            setSuccess('Korong berhasil diperbarui!');
+            break;
+          case 'informasi':
+            await api.put(`/informasi-nagari/informasi-nagari/${selectedItem.id}`, isFormData ? dataToSend : formData, config);
+            setSuccess('Informasi Nagari berhasil diperbarui!');
+            break;
+          case 'sosmed':
+            await api.put(`/informasi-nagari/sosial-media/${selectedItem.id}`, formData);
+            setSuccess('Sosial Media berhasil diperbarui!');
+            break;
+          case 'fasilitas':
+            await api.put(`/informasi-nagari/fasilitas-korong/${selectedItem.id_fasilitas}`, formData);
+            setSuccess('Fasilitas Korong berhasil diperbarui!');
+            break;
+          default:
+            break;
+        }
+      } else {
+        switch (activeTab) {
+          case 'korong':
+            await api.post('/informasi-nagari/korong', formData);
+            setSuccess('Korong berhasil ditambahkan!');
+            break;
+          case 'fasilitas':
+            await api.post('/informasi-nagari/fasilitas-korong', formData);
+            setSuccess('Fasilitas Korong berhasil ditambahkan!');
+            break;
+          default:
+            break;
+        }
+      }
+      setShowAddModal(false);
+      resetForm();
+      fetchData(activeTab);
+    } catch (err) {
+      console.error('Error saving data:', err);
+      setError(err.response?.data?.message || 'Gagal menyimpan data.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      // Membuat URL lokal untuk pratinjau
+      setImagePreview(URL.createObjectURL(file));
+      // Menghapus data struktur dari formData agar tidak terkirim sebagai string
+      const newFormData = { ...formData };
+      delete newFormData.struktur;
+      setFormData(newFormData);
+    } else {
+      setSelectedFile(null);
+      setImagePreview('');
+    }
+  };
+
   const handleAddFasilitas = (korong) => {
     setSelectedKorongForFasilitas(korong);
-    setFasilitasFormData({ nama_fasilitas: '' });
+    setFasilitasFormData({ nama_fasilitas: '', id_korong: korong.id_korong });
     setShowAddFasilitasModal(true);
   };
 
-  const handleSubmitFasilitas = (e) => {
+  const handleSubmitFasilitas = async (e) => {
     e.preventDefault();
-    // Simulate adding fasilitas
-    const newFasilitas = {
-      id_fasilitas: Date.now(), // temporary ID
-      id_korong: selectedKorongForFasilitas.id_korong,
-      nama_fasilitas: fasilitasFormData.nama_fasilitas,
-      korong: { nama_korong: selectedKorongForFasilitas.nama_korong }
-    };
-
-    // Add to fasilitasData
-    setFasilitasData(prev => [...prev, newFasilitas]);
-
-    // Update korongData to include new fasilitas
-    setKorongData(prev => prev.map(korong => {
-      if (korong.id_korong === selectedKorongForFasilitas.id_korong) {
-        return {
-          ...korong,
-          fasilitas: [...(korong.fasilitas || []), newFasilitas]
-        };
-      }
-      return korong;
-    }));
-
-    setSuccess('Fasilitas berhasil ditambahkan!');
-    setShowAddFasilitasModal(false);
-    setSelectedKorongForFasilitas(null);
-    setFasilitasFormData({ nama_fasilitas: '' });
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      await api.post('/informasi-nagari/fasilitas-korong', fasilitasFormData);
+      setSuccess('Fasilitas berhasil ditambahkan!');
+      setShowAddFasilitasModal(false);
+      setSelectedKorongForFasilitas(null);
+      setFasilitasFormData({ nama_fasilitas: '' });
+      fetchData('korong');
+    } catch (err) {
+      console.error('Error adding fasilitas:', err);
+      setError(err.response?.data?.message || 'Gagal menambahkan fasilitas.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDeleteFasilitas = (fasilitasId, korongId) => {
-    // Remove from fasilitasData
-    setFasilitasData(prev => prev.filter(f => f.id_fasilitas !== fasilitasId));
-    
-    // Remove from korongData
-    setKorongData(prev => prev.map(korong => {
-      if (korong.id_korong === korongId) {
-        return {
-          ...korong,
-          fasilitas: (korong.fasilitas || []).filter(f => f.id_fasilitas !== fasilitasId)
-        };
-      }
-      return korong;
-    }));
-
-    setSuccess('Fasilitas berhasil dihapus!');
+  const handleDeleteFasilitas = async (fasilitasId) => {
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      await api.delete(`/informasi-nagari/fasilitas-korong/${fasilitasId}`);
+      setSuccess('Fasilitas berhasil dihapus!');
+      fetchData('korong');
+    } catch (err) {
+      console.error('Error deleting fasilitas:', err);
+      setError('Gagal menghapus fasilitas.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   const AlertMessage = ({ message, type }) => {
@@ -309,21 +370,114 @@ const AdminInformasi = () => {
       </div>
     );
   };
+  
+  const Pagination = ({ totalPages, currentPage, handlePageChange, filteredData }) => {
+    if (totalPages <= 1) return null;
 
+    const getPageNumbers = () => {
+      const pageNumbers = [];
+      const maxVisiblePages = 5;
+      
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.push(i);
+      }
+      
+      return pageNumbers;
+    };
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+    return (
+      <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-6">
+        <div className="flex flex-1 justify-between sm:hidden">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
+        
+        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm text-gray-700">
+              Menampilkan{' '}
+              <span className="font-medium">{indexOfFirstItem + 1}</span> hingga{' '}
+              <span className="font-medium">
+                {Math.min(indexOfLastItem, filteredData.length)}
+              </span>{' '}
+              dari <span className="font-medium">{filteredData.length}</span> hasil
+            </p>
+          </div>
+          
+          <div>
+            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="sr-only">Previous</span>
+                <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+              </button>
+              
+              {getPageNumbers().map((pageNumber) => (
+                <button
+                  key={pageNumber}
+                  onClick={() => handlePageChange(pageNumber)}
+                  className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                    currentPage === pageNumber
+                      ? 'z-10 bg-red-600 text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600'
+                      : 'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              ))}
+              
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="sr-only">Next</span>
+                <ChevronRight className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
   const renderTable = () => {
     const filteredData = getFilteredData();
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-
+      
     switch (activeTab) {
       case 'korong':
         return (
           <div className="space-y-6">
             {currentItems.map((korong) => (
               <div key={korong.id_korong} className="bg-white border border-gray-200 rounded-lg shadow-sm">
-                {/* Korong Header */}
                 <div className="p-6 border-b border-gray-200">
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex-1">
@@ -365,19 +519,10 @@ const AdminInformasi = () => {
                         <Edit className="w-4 h-4" />
                         <span>Edit</span>
                       </button>
-                      <button
-                        onClick={() => handleConfirmDelete(korong.id_korong)}
-                        className="flex items-center space-x-1 px-3 py-2 text-sm text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-                        title="Hapus Korong"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        <span>Hapus</span>
-                      </button>
                     </div>
                   </div>
                 </div>
 
-                {/* Fasilitas Section */}
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-md font-medium text-gray-800">
@@ -401,7 +546,7 @@ const AdminInformasi = () => {
                             <span className="text-sm font-medium text-gray-700">{fasilitas.nama_fasilitas}</span>
                           </div>
                           <button
-                            onClick={() => handleDeleteFasilitas(fasilitas.id_fasilitas, korong.id_korong)}
+                            onClick={() => handleDeleteFasilitas(fasilitas.id_fasilitas)} 
                             className="text-red-500 hover:text-red-700 transition-colors"
                             title="Hapus Fasilitas"
                           >
@@ -420,7 +565,7 @@ const AdminInformasi = () => {
                 </div>
               </div>
             ))}
-
+            <Pagination totalPages={totalPages} currentPage={currentPage} handlePageChange={handlePageChange} filteredData={filteredData} />
             {filteredData.length === 0 && (
               <div className="text-center py-12 text-gray-500">
                 <Home className="w-16 h-16 mx-auto mb-4 text-gray-300" />
@@ -460,13 +605,6 @@ const AdminInformasi = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => handleDetail(fasilitas)}
-                          className="text-blue-600 hover:text-blue-900"
-                          title="Lihat Detail"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
                           onClick={() => handleEdit(fasilitas)}
                           className="text-green-600 hover:text-green-900"
                           title="Edit"
@@ -491,6 +629,7 @@ const AdminInformasi = () => {
                 Tidak ada data fasilitas yang ditemukan
               </div>
             )}
+            <Pagination totalPages={totalPages} currentPage={currentPage} handlePageChange={handlePageChange} filteredData={filteredData} />
           </div>
         );
 
@@ -522,14 +661,30 @@ const AdminInformasi = () => {
                   <div>
                     <p className="text-sm text-gray-600">Visi:</p>
                     <p className="text-sm font-medium text-gray-900 mb-2">{info.visi || 'Belum diisi'}</p>
-                    <p className="text-sm text-gray-600">Kontak:</p>
-                    <p className="text-sm font-medium text-gray-900">{info.kontak || 'Belum diisi'}</p>
+                    <p className="text-sm text-gray-600">Misi:</p>
+                    <div className="text-sm font-medium text-gray-900 mb-2 space-y-1">
+                      {(info.misi || 'Belum diisi')
+                        .split('\n')
+                        .map((line, index) => (
+                          <p key={index}>{line}</p>
+                        ))}
+                    </div>
+                    
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Jam Pelayanan:</p>
                     <p className="text-sm font-medium text-gray-900 mb-2">{info.jam_pelayanan || 'Belum diisi'}</p>
                     <p className="text-sm text-gray-600">Email:</p>
-                    <p className="text-sm font-medium text-gray-900">{info.email || 'Belum diisi'}</p>
+                    <p className="text-sm font-medium text-gray-900 mb-2">{info.email || 'Belum diisi'}</p>
+                    <p className="text-sm text-gray-600">Kontak:</p>
+                    <p className="text-sm font-medium text-gray-900 ">{info.kontak || 'Belum diisi'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Struktur Organisasi</p>
+                    <div className='mt-4'>
+                    <img src={`${imgUrl}/${info.struktur}`}
+                      alt="Foto Struktur Organisasi" className="w-full max-h-64 object-contain rounded-md border border-gray-200" />
+                  </div>
                   </div>
                 </div>
               </div>
@@ -569,15 +724,15 @@ const AdminInformasi = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-600">Facebook:</p>
-                    <p className="text-sm font-medium text-gray-900 mb-2">{sosmed.facebook || 'Belum diisi'}</p>
+                    <p className="text-sm font-medium text-gray-900 mb-2 break-all">{sosmed.facebook || 'Belum diisi'}</p>
                     <p className="text-sm text-gray-600">Instagram:</p>
-                    <p className="text-sm font-medium text-gray-900">{sosmed.instagram || 'Belum diisi'}</p>
+                    <p className="text-sm font-medium text-gray-900 break-all">{sosmed.instagram || 'Belum diisi'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">X (Twitter):</p>
-                    <p className="text-sm font-medium text-gray-900 mb-2">{sosmed.x || 'Belum diisi'}</p>
+                    <p className="text-sm font-medium text-gray-900 mb-2 break-all">{sosmed.x || 'Belum diisi'}</p>
                     <p className="text-sm text-gray-600">YouTube:</p>
-                    <p className="text-sm font-medium text-gray-900">{sosmed.youtube || 'Belum diisi'}</p>
+                    <p className="text-sm font-medium text-gray-900 break-all">{sosmed.youtube || 'Belum diisi'}</p>
                   </div>
                 </div>
               </div>
@@ -723,16 +878,39 @@ const AdminInformasi = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Struktur Organisasi
-              </label>
-              <textarea
-                value={formData.struktur || ''}
-                onChange={(e) => setFormData({...formData, struktur: e.target.value})}
-                rows="3"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              />
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Struktur Organisasi
+                </label>
+                <div>
+                    <div className="flex items-center space-x-4">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className="hidden"
+                            id="file-upload"
+                        />
+                        <label
+                            htmlFor="file-upload"
+                            className="flex items-center space-x-2 px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200"
+                        >
+                            <Upload className="w-5 h-5" />
+                            <span>Pilih Gambar</span>
+                        </label>
+                    </div>
+                </div>
+                {/* Menampilkan pratinjau gambar jika ada */}
+                {imagePreview && (
+                    <div className="mt-4">
+                        <img 
+                            src={imagePreview} 
+                            alt="Pratinjau Struktur Organisasi" 
+                            className="w-full max-h-64 object-contain rounded-md border border-gray-200" 
+                        />
+                    </div>
+                )}
             </div>
+            {/* Akhir perbaikan */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -860,384 +1038,357 @@ const AdminInformasi = () => {
   }, [activeTab]);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-7xl mx-auto">
-
-        {/* Tab Navigation */}
-        <div className="bg-white rounded-lg shadow-sm p-1 mb-6">
-          <div className="flex space-x-1">
+      <div className="relative">
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Informasi Nagari</h1>
+          <nav className="flex space-x-2 border-b border-gray-200">
             {tabs.map((tab) => {
               const IconComponent = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-3 rounded-md font-medium text-sm transition-all duration-200 ${
-                    activeTab === tab.id
-                      ? 'bg-red-600 text-white shadow-lg'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  }`}
+                  className={`flex items-center space-x-2 py-3 px-6 -mb-px font-medium text-sm transition-colors duration-200 border-b-2
+                    ${activeTab === tab.id
+                      ? 'border-red-600 text-red-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
                 >
                   <IconComponent className="w-4 h-4" />
                   <span>{tab.name}</span>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    activeTab === tab.id
-                      ? 'bg-red-700 text-white'
-                      : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {tab.count}
-                  </span>
                 </button>
               );
             })}
-          </div>
+          </nav>
         </div>
 
-        {/* Main Content */}
         <div className="relative">
-          <div className={`bg-white rounded-2xl shadow-xl p-8 ${isAnyModalOpen ? 'blur-sm scale-[0.98] opacity-50' : ''}`}>
-            {/* Header with Search and Add Button */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">
+          <div className={`bg-white rounded-2xl shadow-xl p-8 transition-all duration-300 ${isAnyModalOpen ? 'blur-sm scale-[0.98] opacity-50' : ''}`}>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+              <h2 className="text-2xl font-bold text-gray-800">
                 {tabs.find(tab => tab.id === activeTab)?.name}
               </h2>
               
               <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-                <div className="relative flex-1 md:flex-initial">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <input
-                    type="text"
-                    placeholder={`Cari ${tabs.find(tab => tab.id === activeTab)?.name.toLowerCase()}...`}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 w-full md:w-64 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                  />
-                </div>
+                {activeTab === 'fasilitas' && (
+                  <div className="relative flex-1 md:flex-initial">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      placeholder={`Cari ${tabs.find(tab => tab.id === activeTab)?.name.toLowerCase()}...`}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 pr-4 py-2 w-full md:w-64 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+                    />
+                  </div>
+                )}
                 
-                <button
-                  onClick={handleAdd}
-                  className="flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-200"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span>Tambah {tabs.find(tab => tab.id === activeTab)?.name}</span>
-                </button>
+                {activeTab === 'fasilitas' && (
+                  <button
+                    onClick={handleAdd}
+                    className="flex items-center justify-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 shadow-md"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span>Tambah {tabs.find(tab => tab.id === activeTab)?.name}</span>
+                  </button>
+                )}
               </div>
             </div>
 
             <AlertMessage message={success} type="success" />
             <AlertMessage message={error} type="error" />
 
-            {/* Content */}
-            {renderTable()}
+            {loading ? (
+              <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+              </div>
+            ) : (
+              renderTable()
+            )}
           </div>
+        </div>
 
-          {/* Add/Edit Modal */}
+        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${isAnyModalOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm" 
+            onClick={closeModal}
+          ></div>
+          
           {showAddModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <div 
-                className="fixed inset-0 bg-black/50 backdrop-blur-md" 
-                onClick={closeModal}
-              ></div>
-              <div className="relative bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl border-2 border-gray-200 z-10">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold">
-                    {editMode ? 'Edit' : 'Tambah'} {tabs.find(tab => tab.id === activeTab)?.name}
-                  </h3>
-                  <button
-                    onClick={closeModal}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                </div>
+            <div className="relative bg-white rounded-lg p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 z-10 animate-fade-in-up">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-semibold text-gray-800">
+                  {editMode ? 'Edit' : 'Tambah'} {tabs.find(tab => tab.id === activeTab)?.name}
+                </h3>
+                <button
+                  onClick={closeModal}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
 
-                <div className="space-y-6">
-                  {renderForm()}
-                  
-                  <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
-                    <button
-                      type="button"
-                      onClick={closeModal}
-                      className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                    >
-                      Batal
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleSubmit}
-                      disabled={loading}
-                      className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
-                    >
-                      {loading ? 'Menyimpan...' : (editMode ? 'Update' : 'Simpan')}
-                    </button>
-                  </div>
+              <div className="space-y-6">
+                {renderForm()}
+                
+                <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200 mt-6">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200 shadow-md"
+                  >
+                    {loading ? 'Menyimpan...' : (editMode ? 'Update' : 'Simpan')}
+                  </button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Detail Modal */}
           {showDetailModal && selectedItem && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <div 
-                className="fixed inset-0 bg-black/50 backdrop-blur-md" 
-                onClick={() => setShowDetailModal(false)}
-              ></div>
-              <div className="relative bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl border-2 border-gray-200 z-10">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold">
-                    Detail {tabs.find(tab => tab.id === activeTab)?.name}
-                  </h3>
-                  <button
-                    onClick={() => setShowDetailModal(false)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
-                </div>
+            <div className="relative bg-white rounded-lg p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-200 z-10 animate-fade-in-up">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-semibold text-gray-800">
+                  Detail {tabs.find(tab => tab.id === activeTab)?.name}
+                </h3>
+                <button
+                  onClick={() => setShowDetailModal(false)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
 
-                <div className="space-y-6">
-                  {activeTab === 'korong' && (
-                    <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <h4 className="font-semibold text-gray-800 mb-3">Informasi Korong</h4>
-                          <div className="space-y-3">
-                            <div>
-                              <p className="text-sm text-gray-600">Nama Korong:</p>
-                              <p className="font-medium text-gray-900">{selectedItem.nama_korong}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-600">Deskripsi:</p>
-                              <p className="font-medium text-gray-900">{selectedItem.deskripsi_korong || 'Tidak ada deskripsi'}</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-gray-800 mb-3">Data Demografi</h4>
-                          <div className="space-y-3">
-                            <div className="flex items-center space-x-4">
-                              <div className="text-center">
-                                <p className="text-2xl font-bold text-blue-600">{selectedItem.jumlah_pria}</p>
-                                <p className="text-sm text-gray-600">Pria</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="text-2xl font-bold text-pink-600">{selectedItem.jumlah_wanita}</p>
-                                <p className="text-sm text-gray-600">Wanita</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="text-2xl font-bold text-green-600">{selectedItem.jumlah_pria + selectedItem.jumlah_wanita}</p>
-                                <p className="text-sm text-gray-600">Total</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Fasilitas Detail Section */}
-                      <div className="mt-6">
-                        <h4 className="font-semibold text-gray-800 mb-3">
-                          Fasilitas ({selectedItem.fasilitas?.length || 0})
-                        </h4>
-                        {selectedItem.fasilitas && selectedItem.fasilitas.length > 0 ? (
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                            {selectedItem.fasilitas.map((fasilitas) => (
-                              <div key={fasilitas.id_fasilitas} className="flex items-center p-3 bg-gray-50 rounded-lg border">
-                                <Building className="w-4 h-4 text-gray-400 mr-2" />
-                                <span className="text-sm font-medium text-gray-700">{fasilitas.nama_fasilitas}</span>
-                              </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center py-6 text-gray-500">
-                            <Building className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                            <p className="text-sm">Belum ada fasilitas</p>
-                          </div>
-                        )}
-                      </div>
-                    </>
-                  )}
-
-                  {activeTab === 'fasilitas' && (
-                    <div className="space-y-4">
+              <div className="space-y-6">
+                {activeTab === 'korong' && (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <p className="text-sm text-gray-600">Nama Fasilitas:</p>
-                        <p className="text-lg font-medium text-gray-900">{selectedItem.nama_fasilitas}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Korong:</p>
-                        <p className="font-medium text-gray-900">{selectedItem.korong?.nama_korong || 'N/A'}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeTab === 'informasi' && (
-                    <div className="space-y-6">
-                      <div>
-                        <h4 className="font-semibold text-gray-800 mb-3">Visi & Misi</h4>
+                        <h4 className="font-semibold text-gray-800 mb-3">Informasi Korong</h4>
                         <div className="space-y-3">
                           <div>
-                            <p className="text-sm text-gray-600">Visi:</p>
-                            <p className="font-medium text-gray-900">{selectedItem.visi || 'Belum diisi'}</p>
+                            <p className="text-sm text-gray-600">Nama Korong:</p>
+                            <p className="font-medium text-gray-900">{selectedItem.nama_korong}</p>
                           </div>
                           <div>
-                            <p className="text-sm text-gray-600">Misi:</p>
-                            <p className="font-medium text-gray-900">{selectedItem.misi || 'Belum diisi'}</p>
+                            <p className="text-sm text-gray-600">Deskripsi:</p>
+                            <p className="font-medium text-gray-900">{selectedItem.deskripsi_korong || 'Tidak ada deskripsi'}</p>
                           </div>
                         </div>
                       </div>
-                      
                       <div>
-                        <h4 className="font-semibold text-gray-800 mb-3">Kontak & Pelayanan</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <p className="text-sm text-gray-600">Kontak:</p>
-                            <p className="font-medium text-gray-900">{selectedItem.kontak || 'Belum diisi'}</p>
+                        <h4 className="font-semibold text-gray-800 mb-3">Data Demografi</h4>
+                        <div className="flex items-center space-x-6">
+                          <div className="text-center">
+                            <p className="text-2xl font-bold text-blue-600">{selectedItem.jumlah_pria}</p>
+                            <p className="text-sm text-gray-600">Pria</p>
                           </div>
-                          <div>
-                            <p className="text-sm text-gray-600">Email:</p>
-                            <p className="font-medium text-gray-900">{selectedItem.email || 'Belum diisi'}</p>
+                          <div className="text-center">
+                            <p className="text-2xl font-bold text-pink-600">{selectedItem.jumlah_wanita}</p>
+                            <p className="text-sm text-gray-600">Wanita</p>
                           </div>
-                          <div>
-                            <p className="text-sm text-gray-600">Jam Pelayanan:</p>
-                            <p className="font-medium text-gray-900">{selectedItem.jam_pelayanan || 'Belum diisi'}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600">Video:</p>
-                            <p className="font-medium text-gray-900">{selectedItem.vidio || 'Belum diisi'}</p>
+                          <div className="text-center">
+                            <p className="text-2xl font-bold text-green-600">{selectedItem.jumlah_pria + selectedItem.jumlah_wanita}</p>
+                            <p className="text-sm text-gray-600">Total</p>
                           </div>
                         </div>
-                      </div>
-
-                      <div>
-                        <h4 className="font-semibold text-gray-800 mb-3">Struktur Organisasi</h4>
-                        <p className="font-medium text-gray-900">{selectedItem.struktur || 'Belum diisi'}</p>
                       </div>
                     </div>
-                  )}
 
-                  {activeTab === 'sosmed' && (
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-gray-800 mb-3">Link Sosial Media</h4>
+                    <div className="mt-6">
+                      <h4 className="font-semibold text-gray-800 mb-3">
+                        Fasilitas ({selectedItem.fasilitas?.length || 0})
+                      </h4>
+                      {selectedItem.fasilitas && selectedItem.fasilitas.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {selectedItem.fasilitas.map((fasilitas) => (
+                            <div key={fasilitas.id_fasilitas} className="flex items-center p-3 bg-gray-100 rounded-lg border border-gray-200">
+                              <Building className="w-4 h-4 text-gray-400 mr-2" />
+                              <span className="text-sm font-medium text-gray-700">{fasilitas.nama_fasilitas}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-6 text-gray-500 bg-gray-100 rounded-lg">
+                          <Building className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                          <p className="text-sm">Belum ada fasilitas</p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
+                {activeTab === 'fasilitas' && (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-sm text-gray-600">Nama Fasilitas:</p>
+                      <p className="text-lg font-medium text-gray-900">{selectedItem.nama_fasilitas}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-600">Korong:</p>
+                      <p className="font-medium text-gray-900">{selectedItem.korong?.nama_korong || 'N/A'}</p>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'informasi' && (
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">Visi & Misi</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-sm text-gray-600">Visi:</p>
+                          <p className="font-medium text-gray-900 whitespace-pre-wrap">{selectedItem.visi || 'Belum diisi'}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Misi:</p>
+                          <p className="font-medium text-gray-900 whitespace-pre-wrap">{selectedItem.misi || 'Belum diisi'}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">Kontak & Pelayanan</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm text-gray-600">Facebook:</p>
-                          <p className="font-medium text-gray-900 break-all">{selectedItem.facebook || 'Belum diisi'}</p>
+                          <p className="text-sm text-gray-600">Kontak:</p>
+                          <p className="font-medium text-gray-900">{selectedItem.kontak || 'Belum diisi'}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Instagram:</p>
-                          <p className="font-medium text-gray-900 break-all">{selectedItem.instagram || 'Belum diisi'}</p>
+                          <p className="text-sm text-gray-600">Email:</p>
+                          <p className="font-medium text-gray-900">{selectedItem.email || 'Belum diisi'}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">X (Twitter):</p>
-                          <p className="font-medium text-gray-900 break-all">{selectedItem.x || 'Belum diisi'}</p>
+                          <p className="text-sm text-gray-600">Jam Pelayanan:</p>
+                          <p className="font-medium text-gray-900">{selectedItem.jam_pelayanan || 'Belum diisi'}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">YouTube:</p>
-                          <p className="font-medium text-gray-900 break-all">{selectedItem.youtube || 'Belum diisi'}</p>
+                          <p className="text-sm text-gray-600">Video:</p>
+                          <p className="font-medium text-gray-900 break-all">{selectedItem.vidio || 'Belum diisi'}</p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-800 mb-3">Struktur Organisasi</h4>
+                          <div className='mt-4'>
+                          <img src={`${imgUrl}/${selectedItem.struktur}`}
+                            alt="Foto Struktur Organisasi" className="w-full max-h-64 object-contain rounded-md border border-gray-200" />
+                        </div>
                         </div>
                       </div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
+
+                {activeTab === 'sosmed' && (
+                  <div className="space-y-4">
+                    <h4 className="font-semibold text-gray-800 mb-3">Link Sosial Media</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-600">Facebook:</p>
+                        <p className="font-medium text-gray-900 break-all">{selectedItem.facebook || 'Belum diisi'}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">Instagram:</p>
+                        <p className="font-medium text-gray-900 break-all">{selectedItem.instagram || 'Belum diisi'}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">X (Twitter):</p>
+                        <p className="font-medium text-gray-900 break-all">{selectedItem.x || 'Belum diisi'}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">YouTube:</p>
+                        <p className="font-medium text-gray-900 break-all">{selectedItem.youtube || 'Belum diisi'}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
-          {/* Add Fasilitas Modal */}
           {showAddFasilitasModal && selectedKorongForFasilitas && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <div 
-                className="fixed inset-0 bg-black/50 backdrop-blur-md" 
-                onClick={() => setShowAddFasilitasModal(false)}
-              ></div>
-              <div className="relative bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border-2 border-gray-200 z-10">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-semibold">
-                    Tambah Fasilitas untuk {selectedKorongForFasilitas.nama_korong}
-                  </h3>
-                  <button
-                    onClick={() => setShowAddFasilitasModal(false)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <X className="w-6 h-6" />
-                  </button>
+            <div className="relative bg-white rounded-lg p-8 w-full max-w-md shadow-2xl border border-gray-200 z-10 animate-fade-in-up">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Tambah Fasilitas untuk {selectedKorongForFasilitas.nama_korong}
+                </h3>
+                <button
+                  onClick={() => setShowAddFasilitasModal(false)}
+                  className="text-gray-500 hover:text-gray-700 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmitFasilitas} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Nama Fasilitas
+                  </label>
+                  <input
+                    type="text"
+                    value={fasilitasFormData.nama_fasilitas}
+                    onChange={(e) => setFasilitasFormData({...fasilitasFormData, nama_fasilitas: e.target.value})}
+                    placeholder="Contoh: Masjid, Sekolah, Posyandu"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                    required
+                    autoFocus
+                  />
                 </div>
 
-                <form onSubmit={handleSubmitFasilitas} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nama Fasilitas
-                    </label>
-                    <input
-                      type="text"
-                      value={fasilitasFormData.nama_fasilitas}
-                      onChange={(e) => setFasilitasFormData({...fasilitasFormData, nama_fasilitas: e.target.value})}
-                      placeholder="Contoh: Masjid, Sekolah, Posyandu"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                      required
-                      autoFocus
-                    />
-                  </div>
-
-                  <div className="flex justify-end space-x-3 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowAddFasilitasModal(false)}
-                      className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
-                    >
-                      Batal
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
-                    >
-                      Tambah Fasilitas
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
-
-          {/* Delete Confirmation Modal */}
-          {showDeleteConfirm && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-              <div 
-                className="fixed inset-0 bg-black/50 backdrop-blur-md" 
-                onClick={() => {
-                  setShowDeleteConfirm(false);
-                  setDeleteId(null);
-                }}
-              ></div>
-              <div className="relative bg-white rounded-lg p-6 w-full max-w-md shadow-2xl border-2 border-gray-200 z-10">
-                <h3 className="text-lg font-semibold mb-4">Konfirmasi Hapus</h3>
-                <p className="text-gray-600 mb-6">
-                  Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.
-                </p>
-                <div className="flex justify-end space-x-3">
+                <div className="flex justify-end space-x-3 pt-4">
                   <button
-                    onClick={() => {
-                      setShowDeleteConfirm(false);
-                      setDeleteId(null);
-                    }}
+                    type="button"
+                    onClick={() => setShowAddFasilitasModal(false)}
                     className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                   >
                     Batal
                   </button>
                   <button
-                    onClick={handleDelete}
-                    disabled={loading}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200"
+                    type="submit"
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 shadow-md"
                   >
-                    {loading ? 'Menghapus...' : 'Hapus'}
+                    Tambah Fasilitas
                   </button>
                 </div>
+              </form>
+            </div>
+          )}
+
+          {showDeleteConfirm && (
+            <div className="relative bg-white rounded-lg p-8 w-full max-w-md shadow-2xl border border-gray-200 z-10 animate-fade-in-up">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">Konfirmasi Hapus</h3>
+              <p className="text-gray-600 mb-6">
+                Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.
+              </p>
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeleteId(null);
+                  }}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={loading}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors duration-200 shadow-md"
+                >
+                  {loading ? 'Menghapus...' : 'Hapus'}
+                </button>
               </div>
             </div>
           )}
         </div>
-      </div>
+     
     </div>
   );
 };

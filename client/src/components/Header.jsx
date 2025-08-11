@@ -14,8 +14,11 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
     '/admin/dashboard': {
       title: 'Dashboard'
     },
+    '/admin/profile-nagari': {
+      title: 'Manajemen Profile Nagari',
+    },
     '/admin/berita': {
-      title: 'Manajemen Berita'
+    title: 'Manajemen Berita'
     },
     '/admin/umkm': {
       title: 'Manajemen UMKM'
@@ -34,10 +37,9 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen }) => {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
+    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30 ">
       <div className="px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Left Section */}
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}

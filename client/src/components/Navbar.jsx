@@ -77,7 +77,7 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           {[...Array(6)].map((_, i) => (
             <div
               key={i}
-              className={`absolute w-2 h-2 bg-white/10 rounded-full animate-pulse`}
+              className={`absolute w-2 h-3 bg-white/10 rounded-full animate-pulse`}
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -88,18 +88,20 @@ const Navbar = ({ activeTab, setActiveTab }) => {
           ))}
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <div className="flex justify-between items-center h-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-10 lg:px-8 relative">
+          <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-3 group">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-white via-red-50 to-red-100 rounded-full flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
-                  <div className="w-7 h-7 bg-gradient-to-br from-red-600 to-red-800 rounded-full flex items-center justify-center">
-                    <div className="w-4 h-4 bg-white rounded-full animate-pulse"></div>
-                  </div>
+              <div className="relative w-12 h-12">
+                <div className="w-full h-full bg-gradient-to-br flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110">
+                  <div className="group-hover:scale-110 transition-transform duration-300">
+                      <img 
+                        src="/images/logo.png"
+                        alt="Logo Batu Kalang Utara"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                  <Sparkles className="w-2 h-2 text-white" />
-                </div>
+                
               </div>
               <div className="group-hover:scale-105 transition-transform duration-300">
                 <h1 className="text-sm font-bold bg-gradient-to-r from-white to-red-100 bg-clip-text text-transparent">
@@ -111,7 +113,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
               </div>
             </div>
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-2">
               {navItems.map((item, index) => (
                 <div 
@@ -145,7 +146,6 @@ const Navbar = ({ activeTab, setActiveTab }) => {
                         <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                       </button>
                       
-                      {/* Enhanced Dropdown Menu */}
                       {isDropdownOpen && (
                         <div className="absolute top-full left-0 mt-2 w-56 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 py-2 z-50 animate-in slide-in-from-top-2 duration-200">
                           <div className="absolute -top-2 left-6 w-4 h-4 bg-white/95 backdrop-blur-xl transform rotate-45 border-l border-t border-white/20"></div>

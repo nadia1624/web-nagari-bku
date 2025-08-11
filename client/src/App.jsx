@@ -157,7 +157,7 @@ const AppLayout = () => {
         </AdminLayout>
       } />
 
-      <Route path="/admin/informasi-nagari" element={
+      <Route path="/admin/profile-nagari" element={
         <AdminLayout>
           <AdminInformasi />
         </AdminLayout>

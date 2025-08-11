@@ -6,6 +6,7 @@ import {
   ShoppingBag, 
   LogOut,
   X,
+  User
 } from 'lucide-react';
 
 const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
@@ -19,7 +20,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
-    { id: 'informaasi-nagari', label: 'Informasi Nagari', icon: Newspaper, path: '/admin/informasi-nagari'},
+    { id: 'profile-nagari', label: 'Profile Nagari', icon: User, path: '/admin/profile-nagari'},
     { id: 'berita', label: 'Berita', icon: Newspaper, path: '/admin/berita' },
     { id: 'umkm', label: 'UMKM', icon: ShoppingBag, path: '/admin/umkm' }
   ];
@@ -31,15 +32,15 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
 
   return (
     <>
-      <div className={`${
-        isMobile 
-          ? `fixed top-0 left-0 bottom-0 z-50 transform transition-transform duration-300 ${
-              isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-            }`
-          : `${isSidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300`
-      } bg-gradient-to-b from-red-800 to-red-900 text-white ${
-        isMobile ? 'w-64' : ''
-      } overflow-hidden`}>
+<div className={`${
+  isMobile 
+        ? `fixed top-0 left-0 bottom-0 z-50 transform transition-transform duration-300 ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`
+        : `sticky h-[100vh] ${isSidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300`
+    } bg-gradient-to-b from-red-800 to-red-900 text-white ${
+      isMobile ? 'w-64' : ''
+    } overflow-hidden`}>
         
         <div className="flex flex-col h-full">
           <div className="flex-shrink-0 p-6 border-b border-white/10">
@@ -57,7 +58,6 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
             <p className="text-red-200 text-sm">Website Nagari</p>
           </div>
           
-          {/* Navigation section */}
           <div className="flex-1 px-6 py-4">
             <nav className="space-y-2">
               {menuItems.map((item) => {
@@ -81,7 +81,6 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
             </nav>
           </div>
           
-          {/* Footer section dengan logout */}
           <div className="flex-shrink-0 p-6 border-t border-white/10">
             <button
               onClick={handleLogout}
@@ -94,7 +93,6 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
         </div>
       </div>
 
-      {/* Mobile sidebar overlay dengan backdrop blur */}
       {isMobile && isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300"

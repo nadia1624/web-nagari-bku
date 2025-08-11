@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 5000;
 const authRoutes = require("./routes/authRoute");
 const beritaRoutes = require("./routes/beritaRoute");
 const umkmRoutes = require("./routes/umkmRoute");
+const informasiRoutes = require("./routes/informasiRoute");
 const { Berita, Umkm } = require("./models");
 
 app.use(cors());
@@ -15,6 +16,8 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/berita", beritaRoutes)
 app.use("/umkm", umkmRoutes)
+app.use("/informasi-nagari", informasiRoutes);
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {

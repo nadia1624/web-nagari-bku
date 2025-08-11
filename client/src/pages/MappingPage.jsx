@@ -204,7 +204,6 @@ const MappingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-100/40 relative overflow-hidden">
-      {/* Background Elements */}
       <div className="fixed inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-purple-900/5 to-red-900/5"></div>
         {[...Array(12)]?.map((_, i) => (
@@ -224,7 +223,6 @@ const MappingPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative">
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
           
-          {/* Header */}
           <div className="relative bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white p-8 overflow-hidden">
             <div 
               className="absolute inset-0 opacity-20 transition-all duration-300"
@@ -255,11 +253,9 @@ const MappingPage = () => {
             </div>
           </div>
 
-          {/* Main Content */}
           <div className="p-8">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               
-              {/* Sidebar */}
               <div className="lg:col-span-1">
                 <div className="bg-gradient-to-br from-gray-50 to-blue-50/30 rounded-xl shadow-lg p-6 border border-gray-200">
                   <div className="flex items-center mb-4">
@@ -304,7 +300,6 @@ const MappingPage = () => {
                 </div>
               </div>
 
-              {/* Map Section */}
               <div className="lg:col-span-3">
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
                   <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 border-b">

@@ -29,7 +29,6 @@ const AdminDashboard = () => {
     {
       title: 'Total Berita',
       value: '24',
-      change: '+3 minggu ini',
       icon: Newspaper,
       color: 'from-blue-500 to-blue-600',
       bgLight: 'bg-blue-50',
@@ -38,7 +37,6 @@ const AdminDashboard = () => {
     {
       title: 'Total UMKM',
       value: '156',
-      change: '+12 bulan ini',
       icon: ShoppingBag,
       color: 'from-green-500 to-green-600',
       bgLight: 'bg-green-50',
@@ -71,7 +69,6 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {statsCards.map((stat, index) => {
           const Icon = stat.icon;
@@ -85,7 +82,6 @@ const AdminDashboard = () => {
                 <span className="text-3xl font-bold">{stat.value}</span>
               </div>
               <h3 className="text-lg font-semibold mb-1">{stat.title}</h3>
-              <p className="text-sm opacity-80">{stat.change}</p>
             </div>
           );
         })}

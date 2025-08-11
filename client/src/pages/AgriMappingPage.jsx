@@ -21,22 +21,6 @@ const MapLabels = ({ geojsonData }) => {
     return [lat / (points.length - 1), lng / (points.length - 1)];
   };
 
-  const getIconForCropType = (cropType) => {
-    const icons = {
-      'padi': '🌾',
-      'pepaya': '🥭',
-      'jagung': '🌽',
-      'sayuran': '🥬',
-      'kelapa sawit': '🌴',
-      'karet': '🌳',
-      'cengkeh': '🌿',
-      'kopi': '☕',
-      'coklat': '🍫',
-      'default': '🌱'
-    };
-    return icons[cropType?.toLowerCase()] || icons['default'];
-  };
-
   useEffect(() => {
     labelsRef.current.forEach(marker => {
       if (map.hasLayer(marker)) {
@@ -151,7 +135,6 @@ const AgriculturalMappingPage = () => {
             <p><span class="font-medium text-green-700">Luas:</span> ${area} Ha</p>
             <p><span class="font-medium text-green-700">Pemilik:</span> ${owner}</p>
           </div>
-          <p class="text-xs text-green-600 mt-2 italic">Klik untuk info detail</p>
         </div>`,
         { 
           sticky: true,
@@ -269,7 +252,7 @@ const AgriculturalMappingPage = () => {
                 <h1 className="text-4xl md:text-5xl font-bold">Pemetaan Pertanian</h1>
               </div>
               <p className="text-green-100 text-lg">
-                Monitoring dan analisis lahan pertanian di batu Kalang Utara, Padang Pariaman, Sumatera Barat dengan teknologi GIS interaktif
+                Monitoring dan analisis lahan pertanian di Batu Kalang Utara, Padang Pariaman, Sumatera Barat dengan teknologi GIS interaktif
               </p>
             </div>
           </div>
@@ -301,7 +284,6 @@ const AgriculturalMappingPage = () => {
                     {filteredFarms?.map((farm) => (
                       <button
                         key={farm.id}
-                        onClick={() => handleFarmClick(farm.name)}
                         className={`w-full text-left p-3 rounded-lg transition-all duration-200 border ${
                           selectedFarm === farm.name
                             ? 'bg-green-100 border-green-400 text-green-800 shadow-md'
@@ -373,7 +355,6 @@ const AgriculturalMappingPage = () => {
                     </div>
                     <ul className="text-xs text-amber-700 space-y-1">
                       <li>• Hover untuk melihat detail lahan</li>
-                      <li>• Klik untuk informasi lengkap</li>
                       <li>• Gunakan scroll untuk zoom</li>
                       <li>• Filter berdasarkan jenis tanaman</li>
                     </ul>
@@ -386,7 +367,7 @@ const AgriculturalMappingPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <Navigation className="w-5 h-5 text-green-600 mr-2" />
-                        <h3 className="text-lg font-semibold text-green-800">Peta Interaktif Lahan Pertanian Padang</h3>
+                        <h3 className="text-lg font-semibold text-green-800">Peta Interaktif Lahan Pertanian Batu Kalang Utara</h3>
                       </div>
                       <div className="flex items-center space-x-2">
                         <ZoomIn className="w-4 h-4 text-green-500" />
