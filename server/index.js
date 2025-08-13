@@ -9,7 +9,7 @@ const authRoutes = require("./routes/authRoute");
 const beritaRoutes = require("./routes/beritaRoute");
 const umkmRoutes = require("./routes/umkmRoute");
 const informasiRoutes = require("./routes/informasiRoute");
-const { Berita, Umkm } = require("./models");
+const { Berita, Umkm, InformasiNagari, SosialMedia, Korong, FasilitasKorong } = require("./models");
 
 app.use(cors());
 app.use(express.json());
@@ -42,18 +42,6 @@ app.get('/api/agricultural-geojson', (req, res) => {
       res.status(500).send('Error loading GeoJSON data.');
     }
   });
-});
-
-app.get('/api/korong/:korongName', (req, res) => {
-  const { korongName } = req.params;
-  const korongDetails = {
-    "korong-a": { name: "Korong A", description: "Detail lengkap Korong A...", population: "1500 jiwa" },
-  };
-  if (korongDetails[korongName]) {
-    res.json(korongDetails[korongName]);
-  } else {
-    res.status(404).send('Korong not found');
-  }
 });
 
 app.get('/api/berita', async (req, res) => {
@@ -117,6 +105,93 @@ app.get('/api/umkm/:id_umkm', async (req, res) => {
         res.status(200).json(umkm);
     } catch (error) {
         console.error('Error fetching umkm by ID:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+app.get('/api/profile-nagari', async (req, res) => {
+   try {
+        const info = await InformasiNagari.findOne({
+            order: [['createdAt', 'DESC']],
+        });
+        res.status(200).json(info);
+    } catch (error) {
+        console.error('Error fetching informasi nagari:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+})
+
+app.get('/api/sosial-media', async (req, res) => {
+    try {
+        const sosmed = await SosialMedia.findOne({
+            order: [['createdAt', 'DESC']],
+        });
+        res.status(200).json(sosmed);
+    } catch (error) {
+        console.error('Error fetching sosial media:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+app.get('/api/korong/:korongName', async (req, res) => {
+    try {
+        const { korongName } = req.params;
+
+        const formattedName = korongName
+            .replace(/-/g, ' ')
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+        const korong = await Korong.findOne({
+            where: { nama_korong: formattedName },
+            include: [
+                {
+                    model: FasilitasKorong,
+                    as: 'fasilitas', // Gunakan alias 'fasilitas' sesuai model Korong
+                    attributes: ['nama_fasilitas']
+                }
+            ]
+        });
+
+        if (!korong) {
+            return res.status(404).json({ message: 'Korong tidak ditemukan' });
+        }
+
+        // Menghitung total penduduk dari jumlah pria dan wanita
+        const totalPenduduk = (korong.jumlah_pria || 0) + (korong.jumlah_wanita || 0);
+
+        res.status(200).json({
+            nama: korong.nama_korong,
+            deskripsi: korong.deskripsi_korong || 'Tidak ada deskripsi', // Gunakan atribut `deskripsi_korong`
+            penduduk: totalPenduduk,
+            fasilitas: korong.fasilitas.map(f => f.nama_fasilitas),
+            jumlah_wanita: korong.jumlah_wanita,
+            jumlah_pria: korong.jumlah_pria
+        });
+
+    } catch (error) {
+        console.error('Error fetching korong:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+app.get('/api/korong-names', async (req, res) => {
+    try {
+        const korongs = await Korong.findAll({
+            attributes: ['nama_korong'] // Hanya ambil atribut nama_korong
+        });
+
+        // Format nama korong menjadi format slug URL
+        const korongNames = korongs.map(korong =>
+            korong.nama_korong
+                .toLowerCase()
+                .replace(/\s/g, '-')
+        );
+
+        res.status(200).json(korongNames);
+    } catch (error) {
+        console.error('Error fetching korong names:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });

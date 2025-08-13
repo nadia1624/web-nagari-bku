@@ -659,6 +659,14 @@ const AdminInformasi = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
+                    <p className="text-sm text-gray-600">Deskripsi:</p>
+                    <p className="text-sm font-medium text-gray-900 mb-2 space-y-1">
+                      {(info.deskripsi || 'Belum diisi')
+                        .split('\n')
+                        .map((line, index) => (
+                          <p key={index}>{line}</p>
+                        ))}
+                    </p>
                     <p className="text-sm text-gray-600">Visi:</p>
                     <p className="text-sm font-medium text-gray-900 mb-2">{info.visi || 'Belum diisi'}</p>
                     <p className="text-sm text-gray-600">Misi:</p>
@@ -1240,6 +1248,12 @@ const AdminInformasi = () => {
 
                 {activeTab === 'informasi' && (
                   <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold text-gray-800 mb-3">Deskripsi</h4>
+                      <div className="space-y-3">
+                      <p className="font-medium text-gray-900 whitespace-pre-wrap">{selectedItem.deskripsi || 'Belum diisi'}</p>
+                      </div>
+                      </div>
                     <div>
                       <h4 className="font-semibold text-gray-800 mb-3">Visi & Misi</h4>
                       <div className="space-y-3">

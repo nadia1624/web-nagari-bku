@@ -40,9 +40,9 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
         : `sticky h-[100vh] ${isSidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300`
     } bg-gradient-to-b from-red-800 to-red-900 text-white ${
       isMobile ? 'w-64' : ''
-    } overflow-hidden`}>
+    } overflow-hidden `}>
         
-        <div className="flex flex-col h-full">
+        <div className=" flex flex-col h-full">
           <div className="flex-shrink-0 p-6 border-b border-white/10">
             <div className="flex items-center justify-between mb-2">
               <h1 className="text-xl font-bold text-white">Admin Panel</h1>

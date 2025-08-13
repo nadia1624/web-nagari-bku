@@ -7,6 +7,7 @@ const NewsPage = () => {
   const [visibleSections, setVisibleSections] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
   const sectionRefs = useRef({});
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 

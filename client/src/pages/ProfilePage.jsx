@@ -1,12 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Eye, Target, Users, Calendar, ChevronRight, Leaf } from 'lucide-react';
+import api from '../lib/axios';  
+import imgUrl from '../lib/imageUrl';   
 
 const ProfilePage = () => {
   const [isVisible, setIsVisible] = useState({});
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const sectionRefs = useRef({});
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await api.get('/api/profile-nagari');
+        setProfileData(response.data);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      } finally {
+        setLoading(false);} }; fetchProfileData();
+      }, []);
+      
+      useEffect(() => {
     const observers = new Map();
     
     Object.entries(sectionRefs.current).forEach(([key, ref]) => {
@@ -121,16 +136,9 @@ const ProfilePage = () => {
                       </div>
                       <h3 className="text-xl font-semibold text-gray-800">Tentang Nagari</h3>
                     </div>
-                    <p className="text-gray-700 leading-relaxed mb-4">
-                      Nagari Batu Kalang Utara adalah sebuah nagari yang terletak di wilayah strategis
-                      dengan potensi alam yang melimpah. Nagari ini memiliki sejarah panjang dalam
-                      pembangunan masyarakat dan terus berkembang hingga saat ini.
-                    </p>
-                    <p className="text-gray-700 leading-relaxed">
-                      Dengan jumlah penduduk yang terus bertambah dan berbagai potensi yang dimiliki,
-                      Nagari Batu Kalang Utara berkomitmen untuk terus memberikan pelayanan terbaik
-                      kepada masyarakat dan mengembangkan potensi yang ada.
-                    </p>
+                    <p className="text-gray-700 leading-relaxed mb-4 whitespace-pre-wrap text-justify">
+                      {profileData?.deskripsi || 'Belum ada deskripsi.'}
+                      </p>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4">
@@ -183,40 +191,32 @@ const ProfilePage = () => {
                       <h3 className="text-2xl font-bold text-blue-800">Visi</h3>
                     </div>
                     <p className="text-gray-700 leading-relaxed text-lg italic">
-                      "Terwujudnya Nagari Batu Kalang Utara Sebagai Nagari yang Mandiri, Maju dan Berprestasi
-                      Untuk Kesejahteraan Masyarakat. "
+                      { profileData?.visi}
                     </p>
                   </div>
                 </div>
                 
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-2xl border border-green-200 relative overflow-hidden group hover:shadow-xl transition-all duration-300">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-green-200/30 rounded-full transform translate-x-16 -translate-y-16 group-hover:scale-110 transition-transform duration-500"></div>
-                  <div className="relative">
-                    <div className="flex items-center mb-6">
-                      <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
-                        <Target className="w-6 h-6 text-white" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-green-800">Misi</h3>
+               <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-8 rounded-2xl border border-green-200 relative overflow-hidden group hover:shadow-xl transition-all duration-300">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-green-200/30 rounded-full transform translate-x-16 -translate-y-16 group-hover:scale-110 transition-transform duration-500"></div>
+                <div className="relative">
+                  <div className="flex items-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                      <Target className="w-6 h-6 text-white" />
                     </div>
-                    <ul className="space-y-3 text-s">
-                      {[
-                        'Mewujudkan Penyelenggaraan Pemerintahan yang Baik, Bersih dan Transparan',
-                        'Mewujudkan Sistem Perekonomian Berbasis Ekonomi Kerakyatan serta Penguatan Lembaga Ekonomi Nagari',
-                        'Peningktan Pembangunan Infrastruktur Saranan dan Prasarana Fasilitas Umum Nagari',
-                        'Peningkatan Kualitas Sumber Daya Manusia serta Pemahaman dan Pengamalan Norma - Norma Agama dan Adat Istiadat',
-                        'Peningkatan Derajat dan Kualitas Kesehatan Masyarakat serta Pemetaan Lingkungan yang Bersih dan Sehat',
-                        'Peningkatan Peran serta Masyarakat Terutama Perantau Untuk Kemajuan Pembangunan Nagari'
-                      ].map((mission, index) => (
-                        <li key={index} className="flex items-start text-gray-700 group/item hover:text-green-700 transition-colors">
-                          <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200">
-                            <ChevronRight className="w-3 h-3 text-white" />
-                          </div>
-                          <span className="leading-relaxed">{mission}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <h3 className="text-2xl font-bold text-green-800">Misi</h3>
                   </div>
+                  <ul className="space-y-3 text-s">
+                    {profileData?.misi?.split('\n').filter(Boolean).map((mission, index) => (
+                      <li key={index} className="flex items-start text-gray-700 group/item hover:text-green-700 transition-colors">
+                        <div className="w-6 h-6 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0 group-hover/item:scale-110 transition-transform duration-200">
+                          <ChevronRight className="w-3 h-3 text-white" />
+                        </div>
+                        <span className="leading-relaxed">{mission}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              </div>
               </div>
             </section>
 
@@ -231,7 +231,7 @@ const ProfilePage = () => {
               </h2>
               <div className="w-full h-full rounded-2xl overflow-hidden mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300 relative">
                       <img 
-                        src="/images/gambar2.jpg"
+                        src={`${imgUrl}/${profileData?.struktur}`}
                         alt="Nagari Batu Kalang Utara"
                         className="w-full h-full object-cover"
                       />

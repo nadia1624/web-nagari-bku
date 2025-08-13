@@ -1,10 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Phone, Mail, Clock, Facebook, Instagram, Twitter, Youtube, ArrowUp } from 'lucide-react';
+import api from '../lib/axios';  
 
 const Footer = () => {
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [sosmedData, setSosmedData] = useState(null);
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+    useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await api.get('/api/profile-nagari');
+        setProfileData(response.data);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      } finally {
+        setLoading(false);} }; fetchProfileData();
+      }, []);
+
+    useEffect(() => {
+    const fetchSosmedData = async () => {
+      try {
+        const response = await api.get('/api/sosial-media');
+        setSosmedData(response.data);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      } finally {
+        setLoading(false);} }; fetchSosmedData();
+      }, []);
 
   return (
     <footer className="bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-red-100 mt-auto relative">
@@ -56,16 +82,18 @@ const Footer = () => {
             {/* Social Media Icons */}
             <div className="flex gap-3">
               {[
-                {icon: Facebook, color: 'from-blue-500 to-blue-600', hoverColor: 'hover:from-blue-600 hover:to-blue-700'}, 
-                {icon: Instagram, color: 'from-pink-500 to-purple-600', hoverColor: 'hover:from-pink-600 hover:to-purple-700'}, 
-                {icon: Twitter, color: 'from-sky-400 to-sky-600', hoverColor: 'hover:from-sky-500 hover:to-sky-700'}, 
-                {icon: Youtube, color: 'from-red-500 to-red-600', hoverColor: 'hover:from-red-600 hover:to-red-700'}
+                { icon: Facebook, url: sosmedData?.facebook, color: 'from-blue-500 to-blue-600', hoverColor: 'hover:from-blue-600 hover:to-blue-700' },
+                { icon: Instagram, url: sosmedData?.instagram, color: 'from-pink-500 to-purple-600', hoverColor: 'hover:from-pink-600 hover:to-purple-700' },
+                { icon: Twitter, url: sosmedData?.x, color: 'from-sky-400 to-sky-600', hoverColor: 'hover:from-sky-500 hover:to-sky-700' },
+                { icon: Youtube, url: sosmedData?.youtube, color: 'from-red-500 to-red-600', hoverColor: 'hover:from-red-600 hover:to-red-700' }
               ].map((social, i) => {
                 const Icon = social.icon;
                 return (
-                  <a 
-                    key={i} 
-                    href="#" 
+                  <a
+                    key={i}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`w-10 h-10 bg-white/10 backdrop-blur-sm bg-gradient-to-r ${social.color} ${social.hoverColor} rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:shadow-lg text-white border border-white/20`}
                   >
                     <Icon className="w-5 h-5" />
@@ -73,6 +101,7 @@ const Footer = () => {
                 );
               })}
             </div>
+
           </div>
 
           {/* Contact Section */}
@@ -92,13 +121,13 @@ const Footer = () => {
                 <div className="p-1 rounded-lg bg-gradient-to-r from-green-500 to-teal-600">
                   <Phone className="w-4 h-4 text-white" />
                 </div>
-                <span>(0751) xxx-xxx</span>
+                <span>{profileData?.kontak}</span>
               </li>
               <li className="flex gap-3 items-center hover:text-white transition-colors duration-300">
                 <div className="p-1 rounded-lg bg-gradient-to-r from-purple-500 to-pink-600">
                   <Mail className="w-4 h-4 text-white" />
                 </div>
-                <span>info@batuklangtara.go.id</span>
+                <span>{profileData?.email}</span>
               </li>
             </ul>
           </div>
@@ -114,7 +143,7 @@ const Footer = () => {
                 <div className="p-1 rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-600">
                   <Clock className="w-4 h-4 text-white" />
                 </div>
-                <span>Senin - Jumat: 08:00 - 16:00 WIB</span>
+                <span>{profileData?.jam_pelayanan}</span>
               </li>
             </ul>
           </div>

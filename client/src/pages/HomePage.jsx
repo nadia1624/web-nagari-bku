@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Users, Calendar, ShoppingBag, ArrowRight, Star, TrendingUp, Heart, Award, Sparkles, Eye, ChevronDown } from 'lucide-react';
 import Carousel from '../components/Carousel';
+import api from '../lib/axios';
 
 const HomePage = () => {
   const [videoVisible, setVideoVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const heroRef = useRef(null);
   const statsRef = useRef(null);
   const videoRef = useRef(null);
@@ -45,7 +48,23 @@ const HomePage = () => {
     };
   }, []);
 
-  const videoId = "9t3xxOAMh4Q"; 
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await api.get('/api/profile-nagari');
+        setProfileData(response.data);
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      } finally {
+        setLoading(false);} }; fetchProfileData();
+      }, []);
+
+    const getEmbedUrl = (url) => {
+      if (!url) return null; 
+      if (url.includes("embed/")) return url; 
+      const videoId = url.split("v=")[1]?.split("&")[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 overflow-hidden">
@@ -152,14 +171,24 @@ const HomePage = () => {
           }`}>
             <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 p-2">
               <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&showinfo=0`}
-                  title="Video Profil Nagari Batu Kalang Utara"
-                  className="absolute top-0 left-0 w-full h-full rounded-2xl"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                />
+                {loading ? (
+                  <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-100 rounded-2xl">
+                    <div className="w-10 h-10 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : profileData?.vidio ? (
+                  <iframe
+                    src={getEmbedUrl(profileData.vidio)}
+                    title="Video Profil Nagari Batu Kalang Utara"
+                    className="absolute top-0 left-0 w-full h-full rounded-2xl"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-200 rounded-2xl text-gray-500">
+                    Video belum tersedia
+                  </div>
+                )}
               </div>
             </div>
           </div>

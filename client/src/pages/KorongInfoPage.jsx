@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, Users, Building2, ArrowLeft, Sparkles } from 'lucide-react';
+import { MapPin, Users, Building2, ArrowLeft,  Sparkles } from 'lucide-react';
+import api from '../lib/axios';
 
 const KorongInfoPage = () => {
   const { korongName } = useParams();
+  const [korongData, setKorongData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const formatKorongName = (name) => {
     return name.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
@@ -11,38 +14,30 @@ const KorongInfoPage = () => {
 
   const displayKorongName = formatKorongName(korongName);
 
-  const korongDetails = {
-    "korong-batu-kalang-tuo": {
-      nama: "Korong Batu Kalang Tuo",
-      deskripsi: "Korong A adalah salah satu dari empat korong utama di Nagari Batu Kalang Utara. Dikenal dengan lahan pertaniannya yang subur dan kerukunan warganya.",
-      penduduk: "± 1.500 jiwa",
-      fasilitas: ["Masjid", "Sekolah Dasar", "Puskesmas Pembantu"]
-    },
-    "korong-pondok-kayu": {
-      nama: "Korong Pondok Kayu",
-      deskripsi: "Korong B memiliki keindahan alam yang menawan dengan sungai yang mengalir deras, cocok untuk pengembangan wisata alam. Mayoritas penduduknya bekerja sebagai petani dan pekebun.",
-      penduduk: "± 1.200 jiwa",
-      fasilitas: ["Mushola", "Balai Pertemuan", "Kebun Kopi"]
-    },
-    "korong-durian-siamih": {
-      nama: "Korong Durian Siamih",
-      deskripsi: "Korong C adalah pusat kegiatan masyarakat, dengan pasar tradisional dan berbagai usaha kecil menengah. Masyarakatnya sangat aktif dalam kegiatan kebudayaan.",
-      penduduk: "± 2.000 jiwa",
-      fasilitas: ["Pasar Nagari", "Kantor Korong", "Posyandu"]
-    },
-    "korong-kampung-baru": {
-      nama: "Korong Kampung bru",
-      deskripsi: "Korong D berbatasan langsung dengan hutan lindung, menjadikannya strategis untuk konservasi lingkungan. Warganya menjaga erat adat dan tradisi leluhur.",
-      penduduk: "± 800 jiwa",
-      fasilitas: ["Air Terjun", "Makam Keramat", "Kelompok Tani"]
-    },
+useEffect(() => {
+  const fetchKorong = async () => {
+    try {
+      const res = await api.get(`/api/korong/${korongName}`);
+      console.log("Data korong:", res.data);
+      setKorongData(res.data);
+    } catch (err) {
+      console.error("Gagal mengambil data korong:", err);
+      setKorongData(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const currentKorong = korongDetails[korongName] || {
+  fetchKorong();
+}, [korongName]);
+
+  const currentKorong = korongData || {
     nama: displayKorongName,
-    deskripsi: "Informasi untuk korong ini belum tersedia.",
-    penduduk: "-",
-    fasilitas: []
+    deskripsi: 'Informasi untuk korong ini belum tersedia.',
+    penduduk: '-',
+    fasilitas: [],
+    jumlah_pria: '-',
+    jumlah_wanita: '-'
   };
 
   return (
@@ -114,6 +109,14 @@ const KorongInfoPage = () => {
                 <div className="flex items-center">
                   <span className="text-gray-700 text-lg">Jumlah Penduduk:</span>
                   <span className="ml-3 text-2xl font-bold text-green-700">{currentKorong.penduduk}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-gray-700 text-lg">Jumlah Laki-Laki:</span>
+                  <span className="ml-3 text-2xl font-bold text-blue-600">{currentKorong.jumlah_pria}</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-gray-700 text-lg">Jumlah Perempuan:</span>
+                  <span className="ml-3 text-2xl font-bold text-pink-600">{currentKorong.jumlah_wanita}</span>
                 </div>
               </div>
             </section>
