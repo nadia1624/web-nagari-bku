@@ -16,6 +16,17 @@ const getAllBerita = async (req, res) => {
     }
 }
 
+const getCountBerita = async (req,res)=> {
+    try {
+        const count = await Berita.count()
+        console.log('Jumlah berita:', count);   
+        res.status(200).json({count})
+    } catch (error) {
+        console.error('Error fetching berita:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 const getBeritaById = async (req, res) => {
     const { id_berita } = req.params;
     try {
@@ -105,5 +116,6 @@ module.exports = {
     getBeritaById,
     createBerita,
     deleteBerita,
-    updateBerita
+    updateBerita,
+    getCountBerita
 }

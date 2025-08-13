@@ -16,6 +16,16 @@ const getAllUmkm = async(req, res) => {
     }
 }
 
+const getCountUmkm = async( req, res) => {
+    try {
+        const count = await Umkm.count()
+        res.status(200).json({count})
+    } catch (error) {
+        console.error('Error fetching umkm:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
 const getUmkmById = async (req, res) => {
     const { id_umkm } = req.params;
     try {
@@ -109,5 +119,6 @@ module.exports = {
     getUmkmById,
     createUmkm,
     deleteUmkm,
-    updateUmkm
+    updateUmkm,
+    getCountUmkm
 }

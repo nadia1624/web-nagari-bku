@@ -176,25 +176,6 @@ app.get('/api/korong/:korongName', async (req, res) => {
     }
 });
 
-app.get('/api/korong-names', async (req, res) => {
-    try {
-        const korongs = await Korong.findAll({
-            attributes: ['nama_korong'] // Hanya ambil atribut nama_korong
-        });
-
-        // Format nama korong menjadi format slug URL
-        const korongNames = korongs.map(korong =>
-            korong.nama_korong
-                .toLowerCase()
-                .replace(/\s/g, '-')
-        );
-
-        res.status(200).json(korongNames);
-    } catch (error) {
-        console.error('Error fetching korong names:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
 
 
 app.listen(PORT, () => {

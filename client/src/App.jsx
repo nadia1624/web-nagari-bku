@@ -20,7 +20,7 @@ import AgriMappingPage from './pages/AgriMappingPage';
 import AdminDashboard from './pages/AdminDashboardPage';
 import AdminBerita from './pages/BeritaManagementPage';
 import AdminUmkm from './pages/AdminUmkm';
-import AdminInformasi from './pages/AdminInformasiPage'
+import AdminInformasi from './pages/AdminInformasiPage';
 
 // Admin Layout Components
 import AdminSidebar from './components/AdminSidebar';
