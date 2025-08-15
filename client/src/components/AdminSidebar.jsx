@@ -6,8 +6,7 @@ import {
     ShoppingBag,
     LogOut,
     X,
-    User,
-    List
+    User
 } from 'lucide-react';
 
 const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
@@ -47,7 +46,7 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
                     : `sticky h-screen top-0 ${isSidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300`
             } bg-gradient-to-b from-red-800 to-red-900 text-white ${
                 isMobile ? 'w-64' : ''
-            } overflow-hidden `}>
+            } overflow-hidden flex-shrink-0 `}>
 
                 <div className="flex flex-col h-full">
                     <div className="flex-shrink-0 p-6 border-b border-white/10">
@@ -65,7 +64,8 @@ const AdminSidebar = ({ isSidebarOpen, setIsSidebarOpen, isMobile }) => {
                         <p className="text-red-200 text-sm">Website Nagari</p>
                     </div>
 
-                    <div className="flex-1 px-6 py-4">
+                    {/* Add overflow-y-auto to this div */}
+                    <div className="flex-1 px-6 py-4 overflow-y-auto"> 
                         <nav className="space-y-2">
                             {menuItems.map((item) => {
                                 const Icon = item.icon;
